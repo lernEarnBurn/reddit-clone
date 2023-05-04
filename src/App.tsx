@@ -9,6 +9,9 @@ function App() {
 
   return (
     <BrowserRouter>
+      <div className="top-bar">
+        <div className='logo'></div>
+      </div>
       <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="/popular" element={<Popular/>}/>
