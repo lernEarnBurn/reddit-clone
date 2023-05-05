@@ -9,7 +9,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="top-bar">
+      <div className="h-10vh w-full bg-opacity-95 bg-gray-800 flex items-center">
         <div className='logo'></div>
       </div>
       <Routes>
