@@ -17,15 +17,34 @@ body {
   height: 8.5vh;
 }
 
+.icon {
+  width: 1.8vw;
+  height: 3.7vh;
+  background-repeat: no-repeat;
+  object-fit: cover;
+  padding: 2.5vh;
+  background-position: center center;
+}
+
+.icon:hover {
+  border-radius: 4px;
+  --tw-bg-opacity: 1;
+  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+}
+
+.primary-foreground {
+  color: var(--primary-foreground);
+}
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 47.4% 11.2%;
+    --background: rgb(31 41 55 / var(--tw-bg-opacity));
+    --foreground:#f08a5d;
  
-    --muted: 210 40% 96.1%;
+    --muted: green;
     --muted-foreground: 215.4 16.3% 46.9%;
  
-    --popover: 0 0% 100%;
+    --popover:green;
     --popover-foreground: 222.2 47.4% 11.2%;
  
     --card: 0 0% 100%;
@@ -34,8 +53,8 @@ body {
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
  
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: rgb(31 41 55 / var(--tw-bg-opacity));
+    --primary-foreground: #f08a5d;
  
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -58,7 +77,7 @@ body {
     --muted: 223 47% 11%;
     --muted-foreground: 215.4 16.3% 56.9%;
  
-    --popover: 224 71% 4%;
+    --popover: green;
     --popover-foreground: 215 20.2% 65.1%;
  
     --card: 224 71% 4%;
