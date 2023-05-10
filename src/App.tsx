@@ -6,7 +6,7 @@ import { SearchBar } from './components/ui/searchBar'
 import { useState } from 'react'
 import { Button } from './components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage  } from '@radix-ui/react-avatar';
-import { Login } from './components/login';
+import { Loginform } from './components/login';
 
 import {
   Select,
@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "./components/ui/select"
 
+/*
 import {
   getAuth,
   onAuthStateChanged,
@@ -23,6 +24,7 @@ import {
   signInWithPopup,
   signOut,
 } from 'firebase/auth';
+*/
 
 function App() {
   /*possibly set local storage to save loggin info
@@ -33,10 +35,10 @@ function App() {
 
  
   
-  /*gonna have a log out button that drops down from profile in top right corner */
+  /*gonna have a log out button that drops down from profile in top right corner 
   function signOutUser() {
     signOut(getAuth());
-  }
+  }*/
 
   function logIn(){
     setShowLogIn(true)
@@ -67,7 +69,7 @@ function App() {
 
         {showLogIn && (
           /*This needs to be packaged as its own component to simplify things so i'm not in a conditionally rendered disaster */
-            <Login setShowLogIn={setShowLogIn}/>
+            <Loginform setShowLogIn={setShowLogIn} setLoggedIn={setLoggedIn}/>
          )}
       {loggedIn ? (
           <div>logged in</div>
