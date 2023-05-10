@@ -8,6 +8,7 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   //purge : ["./index.html", "./src/**/*.{js,ts,jsx,tsx}",]
+  // eslint-disable-next-line no-undef
   plugins: [require("tailwindcss-animate")],
   theme: {
     container: {
