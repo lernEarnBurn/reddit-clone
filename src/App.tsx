@@ -6,7 +6,7 @@ import { SearchBar } from './components/ui/searchBar'
 import { useState } from 'react'
 import { Button } from './components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage  } from '@radix-ui/react-avatar';
-import { Input } from './components/ui/input';
+import { Login } from './components/login';
 
 import {
   Select,
@@ -25,15 +25,13 @@ import {
 } from 'firebase/auth';
 
 function App() {
-  /*possibly set local storage to save loggin info */
+  /*possibly set local storage to save loggin info
+    also possibly use onAuthStateChanged to tie this with the firebase authentication */
   const [loggedIn, setLoggedIn] = useState(false)
+
   const [showLogIn, setShowLogIn] = useState(false)
 
-  async function logInGoogle() {
-    /*may just keep as show and not waste one of my google apps on it */
-    const provider = new GoogleAuthProvider();
-    await signInWithPopup(getAuth(), provider);
-  }
+ 
   
   /*gonna have a log out button that drops down from profile in top right corner */
   function signOutUser() {
@@ -69,28 +67,7 @@ function App() {
 
         {showLogIn && (
           /*This needs to be packaged as its own component to simplify things so i'm not in a conditionally rendered disaster */
-            <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-500 bg-opacity-50">
-              <div className="bg-white rounded-lg p-6 h-[65vh] w-[25vw] flex-col items-center">
-                <div className='flex justify-between'>
-                  <h2 className="text-2xl font-medium mb-4">Login</h2>
-                  <button className='mb-12 mr-2 p-1' onClick={() => {setShowLogIn(false)}}>X</button>
-                </div>
-                <button onClick={logInGoogle} className="flex mb-12 items-center gap-2 justify-center hover:bg-gray-100 rounded-sm w-full">
-                  <Avatar className='w-[1.3vw] h-[2vh] bg-contain ml-8 mb-1'>
-                    <AvatarImage src="/images/google.webp" />
-                    <AvatarFallback>CN</AvatarFallback>
-                  </Avatar>
-                  <p className='text-lg mr-10'>Sign-in with Google</p>
-                </button>
-                <Input className=' mb-4' placeholder='Email'/>
-                <Input placeholder='Password'/>
-                <Button size={"lg"} className='mt-4 w-full'>Submit</Button>  
-                <div className='flex mt-6 gap-2 items-center'>
-                  <p>New to Geddit?</p>
-                  <a onClick={signUp} className='text-sm cursor-pointer text-blue-500 underline'>Sign Up</a>
-                </div>              
-              </div>
-            </div>
+            <Login setShowLogIn={setShowLogIn}/>
          )}
       {loggedIn ? (
           <div>logged in</div>
