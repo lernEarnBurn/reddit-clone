@@ -8,20 +8,18 @@ import type { RefObject } from 'react';
 
 import {
     getAuth,
-    //onAuthStateChanged,
     GoogleAuthProvider,
     signInWithPopup,
-    //signOut,
     createUserWithEmailAndPassword,
-    //signInWithEmailAndPassword
+    signInWithEmailAndPassword
   } from 'firebase/auth';
   
 interface LoginProps {
     setShowLogIn: React.Dispatch<React.SetStateAction<boolean>>;
     setLoggedIn:  React.Dispatch<React.SetStateAction<boolean>>;
+    setUser: React.Dispatch<React.SetStateAction<string>>;
 }
 
-//api key wrong and returning 404 on sign up
 
 export function Loginform(props: LoginProps){
 
@@ -36,8 +34,7 @@ export function Loginform(props: LoginProps){
         await signInWithPopup(getAuth(), provider);
     }
 
-    async function signUp(){
-      
+    async function signUp(){     
       const email = emailRef.current?.value
       const password = passwordRef.current?.value
       const auth = getAuth()
@@ -49,6 +46,30 @@ export function Loginform(props: LoginProps){
           console.log(user)
           props.setLoggedIn(true)
           props.setShowLogIn(false)
+          props.setUser(String(user.email))
+        } catch (error: unknown) {
+          if (error instanceof Error) {
+            const errorMessage = error.message
+            console.log(errorMessage)
+          }
+        }
+      }        
+    }
+
+    async function logIn(){
+      const email = emailRef.current?.value
+      const password = passwordRef.current?.value
+      const auth = getAuth()
+
+      if (email && password) {
+        try {
+          const userCredential = await signInWithEmailAndPassword(auth, email, password)
+          const user = userCredential.user
+          console.log(user)
+          props.setLoggedIn(true)
+          props.setShowLogIn(false)
+          props.setUser(String(user.email))
+
         } catch (error: unknown) {
           if (error instanceof Error) {
             const errorMessage = error.message
@@ -88,7 +109,7 @@ export function Loginform(props: LoginProps){
                     </>
                 ) : (
                     <>
-                        <Button size={"lg"} className='mt-4 w-full'>Submit</Button>  
+                        <Button onClick={logIn} size={"lg"} className='mt-4 w-full'>Submit</Button>  
                         <div className='flex mt-6 gap-2 items-center'>
                           <p>New to Geddit?</p>
                           <a onClick={() => {setSignUp(true)}} className='text-sm cursor-pointer text-blue-500 underline'>Sign Up</a>
