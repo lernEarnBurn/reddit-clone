@@ -3,18 +3,10 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Home } from './components/home'
 import { Popular } from './components/popular';
 import { SearchBar } from './components/ui/searchBar'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button } from './components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage  } from '@radix-ui/react-avatar';
 import { Loginform } from './components/loginForm';
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./components/ui/select"
 
 import {
   getAuth,
@@ -22,8 +14,8 @@ import {
 } from 'firebase/auth';
 
 function App() {
-  /*possibly set local storage to save loggin info
-    also possibly use onAuthStateChanged to tie this with the firebase authentication */
+
+  /*possibly set local storage to save loggin info*/
   const [loggedIn, setLoggedIn] = useState(false)
 
   const [showLogIn, setShowLogIn] = useState(false)
@@ -35,31 +27,51 @@ function App() {
     setLoggedIn(false)
     signOut(getAuth())    
   }
-  
-  /*gonna have a log out button that drops down from profile in top right corner 
-  function signOutUser() {
-    signOut(getAuth());
-  }*/
+
 
   function initiateLogIn(){
     setShowLogIn(true)
   }
 
+  const selectRef = useRef<HTMLSelectElement>(null);
+  const [currentSelectValue, setSelectValue] = useState('/')
+  
+  function changeRoute() {
+    const selectedValue = selectRef.current?.value;
+    if (selectedValue) {
+      localStorage.setItem("selectedValue", selectedValue);
+      window.location.href = selectedValue;
+      setSelectValue(selectedValue);
+    }
+  }
+  
+  useEffect(() => {
+    const savedValue = localStorage.getItem("selectedValue");
+    if (savedValue && savedValue !== currentSelectValue) {
+      setSelectValue(savedValue);
+      if(selectRef.current){
+        selectRef.current.value = savedValue;
+      }
+      
+    }
+  }, [currentSelectValue]);
+
+ 
+
   return (
     <BrowserRouter>
       <div className="h-10vh w-full bg-opacity-95 bg-gray-800 flex items-center">
-        <div className='logo mr-6'></div>
-        <Select>
-          <SelectTrigger className="w-[14vw] bg-gray-800 primary-foreground">
-            <SelectValue placeholder="Page" />
-          </SelectTrigger>
-          <SelectContent className=' bg-gray-800 primary-foreground'>
-            <SelectItem value="home">Home</SelectItem>
-            <SelectItem value="popular">Popular</SelectItem>
-            <SelectItem value="create-subreddit">Create Subgeddit</SelectItem>
-            {/*A map function that makes an item for each subreddit */}
-          </SelectContent>
-        </Select>
+        <div className='logo mr-6'></div>        
+          <select         
+            ref={selectRef} 
+            onChange={changeRoute} 
+            className="w-[14vw] bg-gray-800 primary-foreground"  
+            value={currentSelectValue}  
+            >
+            <option value="/">Home</option>
+            <option value="/popular">Popular</option>
+            <option value="/create-subgeddit">Create Subgeddit</option>
+          </select>
         <SearchBar className='w-[32vw] ml-10 primary-foreground font-medium border-gray-900 focus:border-gray-50' placeholder='Search Geddit' />
         <div className='flex gap-5 ml-20'>
           <div style={{backgroundImage: "url('/images/notification.svg')"}} className='icon'></div>
@@ -94,11 +106,14 @@ function App() {
         )}
       </div>
       <Routes>
+        
         <Route path="/" element={<Home/>}/>
         <Route path="/popular" element={<Popular/>}/>
       </Routes>
     </BrowserRouter>
   )
 }
+
+/*gonna add create-geddit route as well as post route */
 
 export default App
