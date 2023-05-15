@@ -11,7 +11,9 @@ import {
     GoogleAuthProvider,
     signInWithPopup,
     createUserWithEmailAndPassword,
-    signInWithEmailAndPassword
+    signInWithEmailAndPassword,
+    setPersistence,
+    browserSessionPersistence 
   } from 'firebase/auth';
   
 interface LoginProps {
@@ -47,6 +49,9 @@ export function Loginform(props: LoginProps){
           props.setLoggedIn(true)
           props.setShowLogIn(false)
           props.setUser(String(user.email))
+          localStorage.setItem('user', String(user.email))
+          await setPersistence(auth, browserSessionPersistence)
+
         } catch (error: unknown) {
           if (error instanceof Error) {
             const errorMessage = error.message
@@ -69,6 +74,8 @@ export function Loginform(props: LoginProps){
           props.setLoggedIn(true)
           props.setShowLogIn(false)
           props.setUser(String(user.email))
+          localStorage.setItem('user', String(user.email))
+          await setPersistence(auth, browserSessionPersistence)
 
         } catch (error: unknown) {
           if (error instanceof Error) {

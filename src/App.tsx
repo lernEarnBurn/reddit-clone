@@ -21,11 +21,21 @@ function App() {
   const [showLogIn, setShowLogIn] = useState(false)
 
   const [user, setUser] = useState("")
+  
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if(savedUser){
+      setLoggedIn(true)
+      setShowLogIn(false)
+      setUser(savedUser)
+    }
+  },[])
 
   function logOut(){
     setUser("")
     setLoggedIn(false)
-    signOut(getAuth())    
+    signOut(getAuth())
+    localStorage.removeItem('user');    
   }
 
 
