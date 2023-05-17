@@ -75,7 +75,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="h-10vh w-full bg-opacity-95 bg-gray-800 flex items-center">
+      <div className="h-10vh w-full bg-opacity-95 bg-gray-800 flex items-center z-6">
         <div className='logo mr-6'></div>        
           <select         
             ref={selectRef} 
@@ -86,6 +86,8 @@ function App() {
             <option value="/">Home</option>
             <option value="/popular">Popular</option>
             <option value="/create-subgeddit">Create Subgeddit</option>
+            <option value="/create-post">Create Post</option>
+
           </select>
         <SearchBar className='w-[32vw] ml-10 primary-foreground font-medium border-gray-900 focus:border-gray-50' placeholder='Search Geddit' />
         <div className='flex gap-5 ml-14'>
