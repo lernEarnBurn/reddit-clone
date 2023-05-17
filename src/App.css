@@ -19,7 +19,7 @@ body {
 }
 
 .icon {
-  @apply w-[1.8vw] h-[3.7vh] bg-no-repeat object-cover p-[2.5vh] bg-center hover:rounded-md hover:bg-opacity-100 hover:bg-gray-900
+  @apply w-[1.8vw] h-[3.7vh] bg-no-repeat object-cover p-[2.5vh] bg-center hover:rounded-md hover:bg-opacity-100 hover:bg-gray-900 
 }
 
 
