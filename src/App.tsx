@@ -25,23 +25,13 @@ function App() {
   
   /*there is a visual bug that I need to take care of */
   useEffect(() => {
-    const img = new Image();
-    img.src = '/images/stockAvatar.png';
-    img.onload = () => {
-      const savedUser = localStorage.getItem('user');
-      if(savedUser){
-        setLoggedIn(true)
-        setShowLogIn(false)
-        setUser(savedUser)
-        setLoading(false)
-      }
-    };
-
-    // Clean up by removing the onload event handler
-    return () => {
-      img.onload = null;
-    };
-   
+    const savedUser = localStorage.getItem('user');
+    if(savedUser){
+      setLoggedIn(true)
+      setShowLogIn(false)
+      setUser(savedUser)
+      setLoading(false)
+    } 
   }, [])
 
   const selectRef = useRef<HTMLSelectElement>(null);
@@ -90,7 +80,7 @@ function App() {
           <select         
             ref={selectRef} 
             onChange={changeRoute} 
-            className="w-[14vw] bg-gray-800 primary-foreground"  
+            className="w-[14vw] bg-gray-800 primary-foreground p-1"  
             value={currentSelectValue}  
             >
             <option value="/">Home</option>
