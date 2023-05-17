@@ -1,9 +1,9 @@
-import { ContentScreen } from "./contentScreen"
+import { ContentScreen } from './contentScreen';
 
-export function Popular(){
-    return (
-        <>
-            <ContentScreen/>
-        </>
-    )
+export function Popular() {
+  return (
+    <>
+      <ContentScreen />
+    </>
+  );
 }
