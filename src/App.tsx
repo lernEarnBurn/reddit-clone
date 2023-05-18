@@ -10,16 +10,12 @@ import { Loginform } from './components/loginForm';
 
 import { getAuth, signOut } from 'firebase/auth';
 
-function App() {
-  /*possibly set local storage to save loggin info*/
+function useLogin() {
   const [loggedIn, setLoggedIn] = useState(false);
-
   const [showLogIn, setShowLogIn] = useState(false);
-
   const [user, setUser] = useState('');
   const [loading, setLoading] = useState(true);
 
-  /*there is a visual bug that I need to take care of */
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
@@ -30,17 +26,21 @@ function App() {
     }
   }, []);
 
+  return {
+    loggedIn,
+    setLoggedIn,
+    showLogIn,
+    setShowLogIn,
+    user,
+    setUser,
+    loading
+  };
+}
+
+
+function useSelectNavigation() {
   const selectRef = useRef<HTMLSelectElement>(null);
   const [currentSelectValue, setSelectValue] = useState('/');
-
-  function changeRoute() {
-    const selectedValue = selectRef.current?.value;
-    if (selectedValue) {
-      localStorage.setItem('selectedValue', selectedValue);
-      window.location.href = selectedValue;
-      setSelectValue(selectedValue);
-    }
-  }
 
   useEffect(() => {
     const savedValue = localStorage.getItem('selectedValue');
@@ -51,6 +51,27 @@ function App() {
       }
     }
   }, [currentSelectValue]);
+
+  function changeRoute() {
+    const selectedValue = selectRef.current?.value;
+    if (selectedValue) {
+      localStorage.setItem('selectedValue', selectedValue);
+      window.location.href = selectedValue;
+      setSelectValue(selectedValue);
+    }
+  }
+
+  return {
+    selectRef,
+    currentSelectValue,
+    changeRoute
+  };
+}
+
+function App() {
+
+  const { loggedIn, setLoggedIn, showLogIn, setShowLogIn, user, setUser, loading } = useLogin();
+  const { selectRef, currentSelectValue, changeRoute } = useSelectNavigation();
 
   function logOut() {
     setUser('');
