@@ -18,6 +18,22 @@ body {
   height: 8.5vh;
 }
 
+.up {
+  background-image: url('/images/defaultUp.png');
+}
+
+.down {
+  background-image: url('/images/defaultDown.png');
+}
+
+.up:hover {
+  background-image: url('/images/hoverUp.png');
+}
+
+.down:hover {
+  background-image: url('/images/hoverDown.png');
+}
+
 .icon {
   @apply w-[1.8vw] h-[3.7vh] bg-no-repeat object-cover p-[2.5vh] bg-center hover:rounded-md hover:bg-opacity-100 hover:bg-gray-900;
 }

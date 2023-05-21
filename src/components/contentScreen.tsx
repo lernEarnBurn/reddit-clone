@@ -1,3 +1,5 @@
+import { Post } from "./post";
+
 export function ContentScreen() {
   return (
     <>
@@ -13,7 +15,14 @@ export function ContentScreen() {
               <div>New</div>
             </div>
           </div>
-          <div className="w-[40vw] h-auto min-h-[81vh] mt-2 bg-gray-800 rounded-sm"></div>
+          <Post 
+            content="https://lh3.googleusercontent.com/a/AGNmyxasMJkHoX7NA_RAoSZa-sKgDkPgYl0HP6xscDqn=s96-c" 
+            title="making props to work for posts" 
+            user="lerner1737@gmail.com" 
+            subgeddit="AmITheAsshole" 
+            timeStamp="3 days ago" 
+            upvotes={88}
+            />
         </div>
         <div className="bg-gray-800 w-[20vw] h-[55vh] rounded-sm mt-2 ml-2"></div>
       </div>
