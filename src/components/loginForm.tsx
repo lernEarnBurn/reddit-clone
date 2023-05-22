@@ -91,13 +91,13 @@ export function Loginform(props: LoginProps) {
   }
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-gray-500 bg-opacity-50">
-      <div className="bg-white rounded-lg p-6 h-[65vh] w-[25vw] flex-col items-center">
+    <div className="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-500 bg-opacity-50">
+      <div className="h-[65vh] w-[25vw] flex-col items-center rounded-lg bg-white p-6">
         <div className="flex justify-between">
           {onSignUp ? (
-            <h2 className="text-3xl font-medium mb-4">Sign Up</h2>
+            <h2 className="mb-4 text-3xl font-medium">Sign Up</h2>
           ) : (
-            <h2 className="text-3xl font-medium mb-4">Login</h2>
+            <h2 className="mb-4 text-3xl font-medium">Login</h2>
           )}
           <button
             className="mb-12 mr-2 p-1"
@@ -110,13 +110,13 @@ export function Loginform(props: LoginProps) {
         </div>
         <button
           onClick={logInGoogle}
-          className="flex mb-12 items-center gap-2 justify-center hover:bg-gray-100 rounded-sm w-full"
+          className="mb-12 flex w-full items-center justify-center gap-2 rounded-sm hover:bg-gray-100"
         >
-          <Avatar className="w-[1.3vw] h-[2vh] bg-contain ml-8 mb-1">
+          <Avatar className="mb-1 ml-8 h-[2vh] w-[1.3vw] bg-contain">
             <AvatarImage src="/images/google.webp" />
             <AvatarFallback>CN</AvatarFallback>
           </Avatar>
-          <p className="text-lg mr-10">Sign-in with Google</p>
+          <p className="mr-10 text-lg">Sign-in with Google</p>
         </button>
         <Input
           ref={emailRef}
@@ -130,13 +130,13 @@ export function Loginform(props: LoginProps) {
             <Button onClick={signUp} size={'lg'} className="mt-4 w-full">
               Submit
             </Button>
-            <div className="flex mt-6 gap-2 items-center">
+            <div className="mt-6 flex items-center gap-2">
               <p>Already Have An Account?</p>
               <a
                 onClick={() => {
                   setSignUp(false);
                 }}
-                className="text-sm cursor-pointer text-blue-500 underline"
+                className="cursor-pointer text-sm text-blue-500 underline"
               >
                 Log In
               </a>
@@ -147,13 +147,13 @@ export function Loginform(props: LoginProps) {
             <Button onClick={logIn} size={'lg'} className="mt-4 w-full">
               Submit
             </Button>
-            <div className="flex mt-6 gap-2 items-center">
+            <div className="mt-6 flex items-center gap-2">
               <p>New to Geddit?</p>
               <a
                 onClick={() => {
                   setSignUp(true);
                 }}
-                className="text-sm cursor-pointer text-blue-500 underline"
+                className="cursor-pointer text-sm text-blue-500 underline"
               >
                 Sign Up
               </a>

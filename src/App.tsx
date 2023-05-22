@@ -33,10 +33,9 @@ function useLogin() {
     setShowLogIn,
     user,
     setUser,
-    loading
+    loading,
   };
 }
-
 
 function useSelectNavigation() {
   const selectRef = useRef<HTMLSelectElement>(null);
@@ -64,13 +63,20 @@ function useSelectNavigation() {
   return {
     selectRef,
     currentSelectValue,
-    changeRoute
+    changeRoute,
   };
 }
 
 function App() {
-
-  const { loggedIn, setLoggedIn, showLogIn, setShowLogIn, user, setUser, loading } = useLogin();
+  const {
+    loggedIn,
+    setLoggedIn,
+    showLogIn,
+    setShowLogIn,
+    user,
+    setUser,
+    loading,
+  } = useLogin();
   const { selectRef, currentSelectValue, changeRoute } = useSelectNavigation();
 
   function logOut() {
@@ -86,12 +92,12 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="h-10vh w-full bg-opacity-95 bg-gray-800 flex items-center z-6">
+      <div className="h-10vh z-6 flex w-full items-center bg-gray-800 bg-opacity-95">
         <div className="logo mr-6"></div>
         <select
           ref={selectRef}
           onChange={changeRoute}
-          className="w-[14vw] bg-gray-800 primary-foreground p-1"
+          className="primary-foreground w-[14vw] bg-gray-800 p-1"
           value={currentSelectValue}
         >
           <option value="/">Home</option>
@@ -100,10 +106,10 @@ function App() {
           <option value="/create-post">Create Post</option>
         </select>
         <SearchBar
-          className="w-[32vw] ml-10 primary-foreground font-medium border-gray-900 focus:border-gray-50"
+          className="primary-foreground ml-10 w-[32vw] border-gray-900 font-medium focus:border-gray-50"
           placeholder="Search Geddit"
         />
-        <div className="flex gap-5 ml-14">
+        <div className="ml-14 flex gap-5">
           <div
             style={{
               backgroundImage: "url('/images/notification.svg')",
@@ -141,14 +147,14 @@ function App() {
             <Button size={'lg'} variant="default" onClick={initiateLogIn}>
               Log In
             </Button>
-            <Avatar className="w-[4.5vw] h-[6vh] bg-contain ml-8">
+            <Avatar className="ml-8 h-[6vh] w-[4.5vw] bg-contain">
               <AvatarImage src="/images/stockAvatar.png" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </>
         ) : loading ? (
-          <div className="flex items-start justify-center  primary-foreground bg-gray-900 rounded-md absolute right-4">
-            <Avatar className="w-[4.5vw] h-[6vh] bg-contain ">
+          <div className="primary-foreground absolute right-4  flex items-start justify-center rounded-md bg-gray-900">
+            <Avatar className="h-[6vh] w-[4.5vw] bg-contain ">
               <AvatarImage src="/images/stockAvatar.png" />
             </Avatar>
             <div className="flex-col">
@@ -156,15 +162,15 @@ function App() {
             </div>
           </div>
         ) : (
-          <div className="flex items-start justify-center  primary-foreground bg-gray-900 rounded-md absolute right-4">
-            <Avatar className="w-[4.5vw] h-[6vh] bg-contain ">
+          <div className="primary-foreground absolute right-4  flex items-start justify-center rounded-md bg-gray-900">
+            <Avatar className="h-[6vh] w-[4.5vw] bg-contain ">
               <AvatarImage src="/images/stockAvatar.png" />
             </Avatar>
             <div className="flex-col">
               <p className="mt-.5 mr-4">{user}</p>
               <p
                 onClick={logOut}
-                className="text-xs cursor-pointer text-gray-100 underline absolute right-30 top-5.5"
+                className="right-30 top-5.5 absolute cursor-pointer text-xs text-gray-100 underline"
               >
                 Log Out
               </p>
