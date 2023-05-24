@@ -7,6 +7,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from './components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { Loginform } from './components/loginForm';
+import { CreatePost } from './components/createPost';
 
 import { getAuth, signOut } from 'firebase/auth';
 
@@ -55,7 +56,13 @@ function useSelectNavigation() {
     const selectedValue = selectRef.current?.value;
     if (selectedValue) {
       localStorage.setItem('selectedValue', selectedValue);
-      window.location.href = selectedValue;
+      
+      if(selectedValue != "/create-subgeddit"){
+        window.location.href = selectedValue;
+      }else{
+        console.log('change state to blit subgeddit form')
+      }
+
       setSelectValue(selectedValue);
     }
   }
@@ -102,7 +109,7 @@ function App() {
         >
           <option value="/">Home</option>
           <option value="/popular">Popular</option>
-          <option value="/create-subgeddit">Create Subgeddit</option>
+          <option value="/create-subgeddit" onSelect={() => {console.log('geddit')}}>Create Subgeddit</option>
           <option value="/create-post">Create Post</option>
         </select>
         <SearchBar
@@ -135,7 +142,7 @@ function App() {
         </div>
 
         {showLogIn && (
-          /*This needs to be packaged as its own component to simplify things so i'm not in a conditionally rendered disaster */
+          /*Put subgedditForm here as well */
           <Loginform
             setShowLogIn={setShowLogIn}
             setLoggedIn={setLoggedIn}
@@ -181,6 +188,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/popular" element={<Popular />} />
+        <Route path="/create-post" element={<CreatePost />} />
       </Routes>
     </BrowserRouter>
   );

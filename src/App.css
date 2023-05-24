@@ -35,7 +35,7 @@ body {
 }
 
 .icon {
-  @apply w-[1.8vw] h-[3.7vh] bg-no-repeat object-cover p-[2.5vh] bg-center hover:rounded-md hover:bg-opacity-100 hover:bg-gray-900;
+  @apply h-[3.7vh] w-[1.8vw] bg-center bg-no-repeat object-cover p-[2.5vh] hover:rounded-md hover:bg-gray-900 hover:bg-opacity-100;
 }
 
 .primary-foreground {
