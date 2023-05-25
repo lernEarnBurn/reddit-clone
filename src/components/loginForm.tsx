@@ -91,7 +91,7 @@ export function Loginform(props: LoginProps) {
   }
 
   return (
-    <div className="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-500 bg-opacity-50">
+    <div className="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-500 bg-opacity-50 z-10">
       <div className="h-[65vh] w-[25vw] flex-col items-center rounded-lg bg-white p-6">
         <div className="flex justify-between">
           {onSignUp ? (

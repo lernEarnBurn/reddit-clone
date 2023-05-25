@@ -8,6 +8,7 @@ import { Button } from './components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { Loginform } from './components/loginForm';
 import { CreatePost } from './components/createPost';
+import { SubgedditForm } from './components/subgedditForm';
 
 import { getAuth, signOut } from 'firebase/auth';
 
@@ -42,6 +43,7 @@ function useSelectNavigation() {
   const selectRef = useRef<HTMLSelectElement>(null);
   const [currentSelectValue, setSelectValue] = useState('/');
 
+
   useEffect(() => {
     const savedValue = localStorage.getItem('selectedValue');
     if (savedValue && savedValue !== currentSelectValue) {
@@ -55,13 +57,8 @@ function useSelectNavigation() {
   function changeRoute() {
     const selectedValue = selectRef.current?.value;
     if (selectedValue) {
-      localStorage.setItem('selectedValue', selectedValue);
-      
-      if(selectedValue != "/create-subgeddit"){
-        window.location.href = selectedValue;
-      }else{
-        console.log('change state to blit subgeddit form')
-      }
+      localStorage.setItem('selectedValue', selectedValue);  
+      window.location.href = selectedValue;
 
       setSelectValue(selectedValue);
     }
@@ -97,6 +94,9 @@ function App() {
     setShowLogIn(true);
   }
 
+
+  const [createSubgeddit, setCreateSubgeddit] = useState(false)
+
   return (
     <BrowserRouter>
       <div className="h-10vh z-6 flex w-full items-center bg-gray-800 bg-opacity-95">
@@ -109,7 +109,6 @@ function App() {
         >
           <option value="/">Home</option>
           <option value="/popular">Popular</option>
-          <option value="/create-subgeddit" onSelect={() => {console.log('geddit')}}>Create Subgeddit</option>
           <option value="/create-post">Create Post</option>
         </select>
         <SearchBar
@@ -138,11 +137,17 @@ function App() {
           <div
             style={{ backgroundImage: "url('/images/add.svg')" }}
             className="icon mr-16"
+            onClick={() => setCreateSubgeddit(true)}
           ></div>
         </div>
 
+        {createSubgeddit && (
+          <SubgedditForm
+            setCreateSubgeddit={setCreateSubgeddit}
+          />
+        )}
+
         {showLogIn && (
-          /*Put subgedditForm here as well */
           <Loginform
             setShowLogIn={setShowLogIn}
             setLoggedIn={setLoggedIn}
@@ -166,6 +171,12 @@ function App() {
             </Avatar>
             <div className="flex-col">
               <p className="mt-.5 mr-4">{user}</p>
+              <p
+                onClick={logOut}
+                className="right-30 top-5.5 absolute cursor-pointer text-xs text-gray-100 underline"
+              >
+                Log Out
+              </p>
             </div>
           </div>
         ) : (

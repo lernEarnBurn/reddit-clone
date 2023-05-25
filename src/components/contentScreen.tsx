@@ -4,14 +4,14 @@ import { Post } from './post';
 export function ContentScreen() {
   return (
     <>
-      <div className="absolute flex h-auto min-h-[91vh] w-screen justify-center bg-gray-700">
+      <div className="bg-gray-700 h-auto min-h-[91vh] w-screen absolute flex justify-center">
         <div>
-          <div className="mt-2 flex h-[8vh] w-[40vw] items-center justify-evenly rounded-sm bg-gray-800 ">
-            <div className="primary-foreground flex">
+          <div className="w-[40vw] h-[8vh] bg-gray-800 flex items-center justify-evenly mt-2 rounded-sm ">
+            <div className="flex primary-foreground">
               <img src="/images/add.svg"></img>
               <div>Top</div>
             </div>
-            <div className="primary-foreground flex">
+            <div className="flex primary-foreground">
               <img src="/images/add.svg"></img>
               <div>New</div>
             </div>
@@ -33,7 +33,7 @@ export function ContentScreen() {
             upvotes={88}
           />
         </div>
-        <PageInfo subgeddit="AmITheAsshole" />
+        <PageInfo subgeddit='AmITheAssholes'/>
       </div>
     </>
   );
