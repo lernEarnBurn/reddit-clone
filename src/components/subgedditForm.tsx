@@ -25,7 +25,7 @@ export function SubgedditForm(props: SubgedditFormProps) {
           <div className="flex-col">
             <Input className="mb-2 mt-14" placeholder="Name"></Input>
             <Textarea
-              className="mb-2 max-h-[255px]"
+              className="mb-2 max-h-[35vh] min-h-[20vh]"
               placeholder="Description"
             />
             <Button className="w-full">Create</Button>

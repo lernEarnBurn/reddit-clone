@@ -19,6 +19,10 @@ body {
   height: 8.5vh;
 }
 
+.selected {
+  border-bottom: #f08a5d 3px solid;
+}
+
 .up {
   background-image: url('/images/defaultUp.png');
 }
