@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { Loginform } from './components/loginForm';
 import { CreatePost } from './components/createPost';
 import { SubgedditForm } from './components/subgedditForm';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./components/ui/tooltip"
 
 import { getAuth, signOut } from 'firebase/auth';
 
@@ -43,7 +44,6 @@ function useSelectNavigation() {
   const selectRef = useRef<HTMLSelectElement>(null);
   const [currentSelectValue, setSelectValue] = useState('/');
 
-
   useEffect(() => {
     const savedValue = localStorage.getItem('selectedValue');
     if (savedValue && savedValue !== currentSelectValue) {
@@ -57,7 +57,7 @@ function useSelectNavigation() {
   function changeRoute() {
     const selectedValue = selectRef.current?.value;
     if (selectedValue) {
-      localStorage.setItem('selectedValue', selectedValue);  
+      localStorage.setItem('selectedValue', selectedValue);
       window.location.href = selectedValue;
 
       setSelectValue(selectedValue);
@@ -94,8 +94,7 @@ function App() {
     setShowLogIn(true);
   }
 
-
-  const [createSubgeddit, setCreateSubgeddit] = useState(false)
+  const [createSubgeddit, setCreateSubgeddit] = useState(false);
 
   return (
     <BrowserRouter>
@@ -112,39 +111,46 @@ function App() {
           <option value="/create-post">Create Post</option>
         </select>
         <SearchBar
-          className="primary-foreground ml-10 w-[32vw] border-gray-900 font-medium focus:border-gray-50"
+          className="ml-10 w-[32vw] border-gray-900 font-medium text-gray-200 focus:border-gray-50"
           placeholder="Search Geddit"
         />
         <div className="ml-14 flex gap-5">
-          <div
-            style={{
-              backgroundImage: "url('/images/notification.svg')",
-            }}
-            className="icon"
-          ></div>
-          <div
-            style={{
-              backgroundImage: "url('/images/message.svg')",
-            }}
-            className="icon"
-          ></div>
-          <div
-            style={{
-              backgroundImage: "url('/images/advertise.svg')",
-            }}
-            className="icon"
-          ></div>
-          <div
-            style={{ backgroundImage: "url('/images/add.svg')" }}
-            className="icon mr-16"
-            onClick={() => setCreateSubgeddit(true)}
-          ></div>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger className='icon' style={{backgroundImage: "url('/images/notification.svg')"}}></TooltipTrigger>
+              <TooltipContent >
+                <p>Notifications</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger className='icon' style={{backgroundImage: "url('/images/message.svg')"}}></TooltipTrigger>
+              <TooltipContent >
+                <p>Messaging</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger className='icon' style={{backgroundImage: "url('/images/advertise.svg')"}}></TooltipTrigger>
+              <TooltipContent >
+                <p>Advertise</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger  onClick={() => setCreateSubgeddit(true)} className='icon mr-16' style={{backgroundImage: "url('/images/add.svg')"}}></TooltipTrigger>
+              <TooltipContent >
+                <p>Create Community</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
 
         {createSubgeddit && (
-          <SubgedditForm
-            setCreateSubgeddit={setCreateSubgeddit}
-          />
+          <SubgedditForm setCreateSubgeddit={setCreateSubgeddit} />
         )}
 
         {showLogIn && (
@@ -165,6 +171,7 @@ function App() {
             </Avatar>
           </>
         ) : loading ? (
+          /*Implement skeleton from shadcn to allow for a smother load of user */
           <div className="primary-foreground absolute right-4  flex items-start justify-center rounded-md bg-gray-900">
             <Avatar className="h-[6vh] w-[4.5vw] bg-contain ">
               <AvatarImage src="/images/stockAvatar.png" />
