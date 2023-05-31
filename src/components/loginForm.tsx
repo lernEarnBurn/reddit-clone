@@ -16,6 +16,8 @@ import {
   browserSessionPersistence,
 } from 'firebase/auth';
 
+import { addDoc, collection, getFirestore } from 'firebase/firestore'
+
 interface LoginProps {
   setShowLogIn: React.Dispatch<React.SetStateAction<boolean>>;
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
@@ -34,6 +36,19 @@ export function Loginform(props: LoginProps) {
     await signInWithPopup(getAuth(), provider);
   }
 
+  async function storeUser(email: string){
+    try {
+      await addDoc(collection(getFirestore(), 'users'), {
+        following: [],
+        name: email,
+        posts: [],
+        profilePicUrl: ""
+      });
+    } catch (error) {
+      console.error('Error writing new message to Firebase Database', error);
+    }
+  }
+
   async function signUp() {
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
@@ -46,7 +61,10 @@ export function Loginform(props: LoginProps) {
           email,
           password
         );
-        const user = userCredential.user;
+        
+        storeUser(email)
+
+        const user = userCredential.user;  
         console.log(user);
         props.setLoggedIn(true);
         props.setShowLogIn(false);
@@ -91,7 +109,7 @@ export function Loginform(props: LoginProps) {
   }
 
   return (
-    <div className="fixed left-0 top-0 flex h-full w-full items-center justify-center bg-gray-500 bg-opacity-50 z-10">
+    <div className="fixed left-0 top-0 z-10 flex h-full w-full items-center justify-center bg-gray-500 bg-opacity-50">
       <div className="h-[65vh] w-[25vw] flex-col items-center rounded-lg bg-white p-6">
         <div className="flex justify-between">
           {onSignUp ? (
