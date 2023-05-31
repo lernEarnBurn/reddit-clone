@@ -8,6 +8,7 @@ import { addDoc, updateDoc, collection, getFirestore, doc, arrayUnion, Firestore
 import { getStorage, ref, getDownloadURL, uploadBytesResumable  } from 'firebase/storage'
 
 import { getDocumentIdFromField } from '../modules/getIdFromField';
+import { inCollection } from '../modules/inCollection';
 
 
 
@@ -70,6 +71,8 @@ export function CreatePost(props: CreatePostProps) {
     }
   }
 
+  
+
   async function addPostToUser(database: Firestore, postId: string){
     const userId = await getDocumentIdFromField('users', 'name', localStorage.getItem('user'))
     const userRef = doc(database, 'users', userId)
@@ -88,55 +91,65 @@ export function CreatePost(props: CreatePostProps) {
     });
   }
 
-
+  
   async function createPost(text: boolean){
-    try {
-      const postRef = await addDoc(collection(getFirestore(), 'posts'), {
-        comments: [],
-        content: "",
-        postedBy: localStorage.getItem('user'),
-        subgeddit: subgedditInputRef.current?.value,
-        timePosted: Date.now(),
-        title: titleInputRef.current?.value,
-        upvotes: 0 
-      });
-
-
-      if(text){
-        await updateDoc(postRef, {
-          content: contentRef.current?.value,
-          storageUri: null,
+    if(await inCollection('subgeddits', subgedditInputRef.current?.value)){
+      try {
+        const postRef = await addDoc(collection(getFirestore(), 'posts'), {
+          comments: [],
+          content: "",
+          postedBy: localStorage.getItem('user'),
+          subgeddit: subgedditInputRef.current?.value,
+          timePosted: Date.now(),
+          title: titleInputRef.current?.value,
+          upvotes: 0 
         });
-      }else if(!text && imageUploaderRef.current?.files){
-        const filePath = `${localStorage.getItem('user')}/${postRef.id}/${
-          imageUploaderRef.current?.files[0].name
-        }`;
-        const newImageRef = ref(getStorage(), filePath);
-        const fileSnapshot = await uploadBytesResumable(newImageRef, imageUploaderRef.current?.files[0]);
-
-        const publicImageUrl = await getDownloadURL(newImageRef);
 
 
-        await updateDoc(postRef, {
-          content: publicImageUrl,
-          storageUri: fileSnapshot.metadata.fullPath,
-        });
+        if(text){
+          await updateDoc(postRef, {
+            content: contentRef.current?.value,
+            storageUri: null,
+          });
+        }else if(!text && imageUploaderRef.current?.files){
+          const filePath = `${localStorage.getItem('user')}/${postRef.id}/${
+            imageUploaderRef.current?.files[0].name
+          }`;
+          const newImageRef = ref(getStorage(), filePath);
+          const fileSnapshot = await uploadBytesResumable(newImageRef, imageUploaderRef.current?.files[0]);
+
+          const publicImageUrl = await getDownloadURL(newImageRef);
+
+
+          await updateDoc(postRef, {
+            content: publicImageUrl,
+            storageUri: fileSnapshot.metadata.fullPath,
+          });
+        }
+
+        const db = getFirestore();
+
+        await addPostToUser(db, postRef.id)
+        await addPostToSubgeddit(db, postRef.id)
+
+        clearInputs(text)
+
+        //placeholder for a nicer alert
+        alert("Post Created")
+      } catch (error) {
+        alert(error)
+        console.error('Error writing new message to Firebase Database', error);
       }
-    
-
-      const db = getFirestore();
-      
-      await addPostToUser(db, postRef.id)
-      await addPostToSubgeddit(db, postRef.id)
-
-      clearInputs(text)
-
-
-    } catch (error) {
-      console.error('Error writing new message to Firebase Database', error);
+    }else{
+      if (subgedditInputRef.current) {
+        subgedditInputRef.current.style.borderColor = 'red';
+        setTimeout(() => {
+          if (subgedditInputRef.current) {
+            subgedditInputRef.current.style.borderColor = 'black';
+          }
+        }, 1000);
+      }
     }
-
-    //need to put post in posts field for subgeddits and users collections
   }
 
   
@@ -162,8 +175,6 @@ export function CreatePost(props: CreatePostProps) {
             Image
           </button>
         </div>
-        {/*When focus on subgeddit input make a list of the users followed
-        subgeddits appear */}
         {onTextMode ? (
           <>
             <Input
