@@ -4,7 +4,16 @@ import { Textarea } from './ui/textarea';
 
 import { useRef } from 'react';
 
-import { addDoc, collection, getFirestore } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  getFirestore,
+  updateDoc,
+  arrayUnion,
+  doc,
+} from 'firebase/firestore';
+
+import { getDocumentIdFromField } from '../modules/getIdFromField';
 
 interface SubgedditFormProps {
   setCreateSubgeddit: React.Dispatch<React.SetStateAction<boolean>>;
@@ -24,11 +33,26 @@ export function SubgedditForm(props: SubgedditFormProps) {
         posts: [],
       });
       //now add this to leaders (users) subgeddits
+
+      const db = getFirestore();
+
+      const userId = await getDocumentIdFromField(
+        'users',
+        'name',
+        localStorage.getItem('user')
+      );
+      const userRef = doc(db, 'users', userId);
+
+      await updateDoc(userRef, {
+        following: arrayUnion(nameRef.current?.value),
+      });
     } catch (error) {
       console.error('Error writing new message to Firebase Database', error);
     }
     props.setCreateSubgeddit(false);
   }
+
+  /*Needs a loading animation when creating a subgeddit */
 
   return (
     <>
