@@ -16,10 +16,10 @@ import {
   browserSessionPersistence,
 } from 'firebase/auth';
 
-import { addDoc, collection, getFirestore } from 'firebase/firestore'
+import { addDoc, collection, getFirestore } from 'firebase/firestore';
 
 interface LoginProps {
-  setShowLogIn: React.Dispatch<React.SetStateAction<boolean>>;
+  setDisplayLogin: React.Dispatch<React.SetStateAction<boolean>>;
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   setUser: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -36,13 +36,13 @@ export function Loginform(props: LoginProps) {
     await signInWithPopup(getAuth(), provider);
   }
 
-  async function storeUser(email: string){
+  async function storeUser(email: string) {
     try {
       await addDoc(collection(getFirestore(), 'users'), {
         following: [],
         name: email,
         posts: [],
-        profilePicUrl: ""
+        profilePicUrl: '',
       });
     } catch (error) {
       console.error('Error writing new message to Firebase Database', error);
@@ -61,13 +61,13 @@ export function Loginform(props: LoginProps) {
           email,
           password
         );
-        
-        storeUser(email)
 
-        const user = userCredential.user;  
+        storeUser(email);
+
+        const user = userCredential.user;
         console.log(user);
         props.setLoggedIn(true);
-        props.setShowLogIn(false);
+        props.setDisplayLogin(false);
         props.setUser(String(user.email));
         localStorage.setItem('user', String(user.email));
         await setPersistence(auth, browserSessionPersistence);
@@ -95,7 +95,7 @@ export function Loginform(props: LoginProps) {
         const user = userCredential.user;
         console.log(user);
         props.setLoggedIn(true);
-        props.setShowLogIn(false);
+        props.setDisplayLogin(false);
         props.setUser(String(user.email));
         localStorage.setItem('user', String(user.email));
         await setPersistence(auth, browserSessionPersistence);
@@ -120,7 +120,7 @@ export function Loginform(props: LoginProps) {
           <button
             className="mb-12 mr-2 p-1"
             onClick={() => {
-              props.setShowLogIn(false);
+              props.setDisplayLogin(false);
             }}
           >
             X

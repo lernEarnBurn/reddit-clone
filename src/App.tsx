@@ -25,7 +25,9 @@ function useLogin() {
   const [DisplayLogin, setDisplayLogin] = useState(false);
   const [user, setUser] = useState('');
   const [loading, setLoading] = useState(true);
-  const [followedSubgeddits, setFollowedSubgeddits] = useState<string[] | undefined>(undefined)
+  const [followedSubgeddits, setFollowedSubgeddits] = useState<
+    string[] | undefined
+  >(undefined);
 
   useEffect(() => {
     async function fetchLoggedInState() {
@@ -41,8 +43,7 @@ function useLogin() {
     }
 
     fetchLoggedInState();
-  }, []);    
-  
+  }, []);
 
   return {
     loggedIn,
@@ -52,7 +53,7 @@ function useLogin() {
     user,
     setUser,
     loading,
-    followedSubgeddits
+    followedSubgeddits,
   };
 }
 
@@ -96,7 +97,7 @@ function App() {
     user,
     setUser,
     loading,
-    followedSubgeddits
+    followedSubgeddits,
   } = useLogin();
   const { selectRef, currentSelectValue, changeRoute } = useSelectNavigation();
 
@@ -113,8 +114,6 @@ function App() {
 
   const [createSubgeddit, setCreateSubgeddit] = useState(false);
 
-  
-
   //all forms could use protocol and animation for if there is an incorrect input
 
   return (
@@ -130,10 +129,14 @@ function App() {
           <option value="/">Home</option>
           <option value="/popular">Popular</option>
           <option value="/create-post">Create Post</option>
-          {followedSubgeddits && followedSubgeddits.map((subgeddit) => {
-            return <option key={subgeddit} value={`/subgeddits/${subgeddit}`}>{subgeddit}</option>
-          })
-          }
+          {followedSubgeddits &&
+            followedSubgeddits.map((subgeddit) => {
+              return (
+                <option key={subgeddit} value={`/subgeddits/${subgeddit}`}>
+                  {subgeddit}
+                </option>
+              );
+            })}
         </select>
         <SearchBar
           className="ml-10 w-[32vw] border-gray-900 font-medium text-gray-200 focus:border-gray-50"

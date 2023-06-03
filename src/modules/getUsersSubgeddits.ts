@@ -4,11 +4,11 @@ import {
   where,
   getDocs,
   getFirestore,
-  DocumentData
+  DocumentData,
 } from 'firebase/firestore';
 
 export async function getUsersSubgeddits(
-    username: string
+  username: string
 ): Promise<string[] | undefined> {
   const db = getFirestore();
   const collectionRef = collection(db, 'users');
@@ -28,4 +28,3 @@ export async function getUsersSubgeddits(
 
   return undefined;
 }
-

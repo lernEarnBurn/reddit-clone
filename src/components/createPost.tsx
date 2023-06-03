@@ -4,19 +4,28 @@ import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 
-import { addDoc, updateDoc, collection, getFirestore, doc, arrayUnion, Firestore } from 'firebase/firestore'
-import { getStorage, ref, getDownloadURL, uploadBytesResumable  } from 'firebase/storage'
+import {
+  addDoc,
+  updateDoc,
+  collection,
+  getFirestore,
+  doc,
+  arrayUnion,
+  Firestore,
+} from 'firebase/firestore';
+import {
+  getStorage,
+  ref,
+  getDownloadURL,
+  uploadBytesResumable,
+} from 'firebase/storage';
 
 import { getDocumentIdFromField } from '../modules/getIdFromField';
 import { inCollection } from '../modules/inCollection';
 
-
-
-
-
 interface CreatePostProps {
-  loggedIn: boolean,
-  setShowLogin:  React.Dispatch<React.SetStateAction<boolean>>
+  loggedIn: boolean;
+  setDisplayLogin: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function CreatePost(props: CreatePostProps) {
@@ -50,76 +59,90 @@ export function CreatePost(props: CreatePostProps) {
     }
   }
 
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  const subgedditInputRef = useRef<HTMLInputElement>(null);
+  const contentRef = useRef<HTMLTextAreaElement>(null);
 
-  const titleInputRef = useRef<HTMLInputElement>(null)
-  const subgedditInputRef = useRef<HTMLInputElement>(null)
-  const contentRef = useRef<HTMLTextAreaElement>(null)
-
-
-  function clearInputs(text: boolean){
-    if(text && titleInputRef.current && subgedditInputRef.current && contentRef.current){
-      titleInputRef.current.value = ""
-      subgedditInputRef.current.value = ""
-      contentRef.current.value = ""
+  function clearInputs(text: boolean) {
+    if (
+      text &&
+      titleInputRef.current &&
+      subgedditInputRef.current &&
+      contentRef.current
+    ) {
+      titleInputRef.current.value = '';
+      subgedditInputRef.current.value = '';
+      contentRef.current.value = '';
       //display something showing that it was posted
-    }else if (!text && titleInputRef.current && subgedditInputRef.current && imageUploaderRef.current){
-      titleInputRef.current.value = ""
-      subgedditInputRef.current.value = ""
-      imageUploaderRef.current.value = ""
-      setCurrentImage('')
+    } else if (
+      !text &&
+      titleInputRef.current &&
+      subgedditInputRef.current &&
+      imageUploaderRef.current
+    ) {
+      titleInputRef.current.value = '';
+      subgedditInputRef.current.value = '';
+      imageUploaderRef.current.value = '';
+      setCurrentImage('');
       //display something showing that it was posted
     }
   }
 
-  
+  async function addPostToUser(database: Firestore, postId: string) {
+    const userId = await getDocumentIdFromField(
+      'users',
+      'name',
+      localStorage.getItem('user')
+    );
+    const userRef = doc(database, 'users', userId);
 
-  async function addPostToUser(database: Firestore, postId: string){
-    const userId = await getDocumentIdFromField('users', 'name', localStorage.getItem('user'))
-    const userRef = doc(database, 'users', userId)
-
-      await updateDoc(userRef, {
-        posts: arrayUnion(postId),
-      });
+    await updateDoc(userRef, {
+      posts: arrayUnion(postId),
+    });
   }
 
-  async function addPostToSubgeddit(database: Firestore, postId: string){
-    const subgedditId = await getDocumentIdFromField('subgeddits', 'name', subgedditInputRef.current?.value)
-    const subgedditRef = doc(database, 'subgeddits', subgedditId)
+  async function addPostToSubgeddit(database: Firestore, postId: string) {
+    const subgedditId = await getDocumentIdFromField(
+      'subgeddits',
+      'name',
+      subgedditInputRef.current?.value
+    );
+    const subgedditRef = doc(database, 'subgeddits', subgedditId);
 
     await updateDoc(subgedditRef, {
       posts: arrayUnion(postId),
     });
   }
 
-  
-  async function createPost(text: boolean){
-    if(await inCollection('subgeddits', subgedditInputRef.current?.value)){
+  async function createPost(text: boolean) {
+    if (await inCollection('subgeddits', subgedditInputRef.current?.value)) {
       try {
         const postRef = await addDoc(collection(getFirestore(), 'posts'), {
           comments: [],
-          content: "",
+          content: '',
           postedBy: localStorage.getItem('user'),
           subgeddit: subgedditInputRef.current?.value,
           timePosted: Date.now(),
           title: titleInputRef.current?.value,
-          upvotes: 0 
+          upvotes: 0,
         });
 
-
-        if(text){
+        if (text) {
           await updateDoc(postRef, {
             content: contentRef.current?.value,
             storageUri: null,
           });
-        }else if(!text && imageUploaderRef.current?.files){
+        } else if (!text && imageUploaderRef.current?.files) {
           const filePath = `${localStorage.getItem('user')}/${postRef.id}/${
             imageUploaderRef.current?.files[0].name
           }`;
           const newImageRef = ref(getStorage(), filePath);
-          const fileSnapshot = await uploadBytesResumable(newImageRef, imageUploaderRef.current?.files[0]);
+          const fileSnapshot = await uploadBytesResumable(
+            newImageRef,
+            imageUploaderRef.current?.files[0]
+          );
 
           const publicImageUrl = await getDownloadURL(newImageRef);
-
 
           await updateDoc(postRef, {
             content: publicImageUrl,
@@ -129,18 +152,18 @@ export function CreatePost(props: CreatePostProps) {
 
         const db = getFirestore();
 
-        await addPostToUser(db, postRef.id)
-        await addPostToSubgeddit(db, postRef.id)
+        await addPostToUser(db, postRef.id);
+        await addPostToSubgeddit(db, postRef.id);
 
-        clearInputs(text)
+        clearInputs(text);
 
         //placeholder for a nicer alert
-        alert("Post Created")
+        alert('Post Created');
       } catch (error) {
-        alert(error)
+        alert(error);
         console.error('Error writing new message to Firebase Database', error);
       }
-    }else{
+    } else {
       if (subgedditInputRef.current) {
         subgedditInputRef.current.style.borderColor = 'red';
         setTimeout(() => {
@@ -151,8 +174,6 @@ export function CreatePost(props: CreatePostProps) {
       }
     }
   }
-
-  
 
   return (
     <>
@@ -193,9 +214,21 @@ export function CreatePost(props: CreatePostProps) {
               ref={contentRef}
             />
             {props.loggedIn ? (
-              <Button className="ml-6 mt-4 h-[6vh] w-[42vw] text-xl" onClick={() => createPost(true)}>Post</Button>
+              <Button
+                className="ml-6 mt-4 h-[6vh] w-[42vw] text-xl"
+                onClick={() => createPost(true)}
+              >
+                Post
+              </Button>
             ) : (
-              <Button className="ml-6 mt-4 h-[6vh] w-[42vw] text-xl" onClick={() => {props.setShowLogin(true)}} >Post</Button>
+              <Button
+                className="ml-6 mt-4 h-[6vh] w-[42vw] text-xl"
+                onClick={() => {
+                  props.setDisplayLogin(true);
+                }}
+              >
+                Post
+              </Button>
             )}
           </>
         ) : (
@@ -229,9 +262,21 @@ export function CreatePost(props: CreatePostProps) {
               accept="image/*"
             />
             {props.loggedIn ? (
-              <Button className="ml-6 mt-4 h-[6vh] w-[42vw] text-xl" onClick={() => createPost(false)}>Post</Button>
+              <Button
+                className="ml-6 mt-4 h-[6vh] w-[42vw] text-xl"
+                onClick={() => createPost(false)}
+              >
+                Post
+              </Button>
             ) : (
-              <Button className="ml-6 mt-4 h-[6vh] w-[42vw] text-xl" onClick={() => {props.setShowLogin(true)}} >Post</Button>
+              <Button
+                className="ml-6 mt-4 h-[6vh] w-[42vw] text-xl"
+                onClick={() => {
+                  props.setDisplayLogin(true);
+                }}
+              >
+                Post
+              </Button>
             )}
           </>
         )}
