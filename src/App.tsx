@@ -9,34 +9,50 @@ import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { Loginform } from './components/loginForm';
 import { CreatePost } from './components/createPost';
 import { SubgedditForm } from './components/subgedditForm';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./components/ui/tooltip"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from './components/ui/tooltip';
 
 import { getAuth, signOut } from 'firebase/auth';
 
+import { getUsersSubgeddits } from './modules/getUsersSubgeddits';
+
 function useLogin() {
   const [loggedIn, setLoggedIn] = useState(false);
-  const [showLogIn, setShowLogIn] = useState(false);
+  const [DisplayLogin, setDisplayLogin] = useState(false);
   const [user, setUser] = useState('');
   const [loading, setLoading] = useState(true);
+  const [followedSubgeddits, setFollowedSubgeddits] = useState<string[] | undefined>(undefined)
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) {
-      setLoggedIn(true);
-      setShowLogIn(false);
-      setUser(savedUser);
-      setLoading(false);
+    async function fetchLoggedInState() {
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        setLoggedIn(true);
+        setDisplayLogin(false);
+        setUser(savedUser);
+        setLoading(false);
+        const userFollowedSubgeddits = await getUsersSubgeddits(savedUser);
+        setFollowedSubgeddits(userFollowedSubgeddits);
+      }
     }
-  }, []);
+
+    fetchLoggedInState();
+  }, []);    
+  
 
   return {
     loggedIn,
     setLoggedIn,
-    showLogIn,
-    setShowLogIn,
+    DisplayLogin,
+    setDisplayLogin,
     user,
     setUser,
     loading,
+    followedSubgeddits
   };
 }
 
@@ -75,11 +91,12 @@ function App() {
   const {
     loggedIn,
     setLoggedIn,
-    showLogIn,
-    setShowLogIn,
+    DisplayLogin,
+    setDisplayLogin,
     user,
     setUser,
     loading,
+    followedSubgeddits
   } = useLogin();
   const { selectRef, currentSelectValue, changeRoute } = useSelectNavigation();
 
@@ -91,10 +108,14 @@ function App() {
   }
 
   function initiateLogIn() {
-    setShowLogIn(true);
+    setDisplayLogin(true);
   }
 
   const [createSubgeddit, setCreateSubgeddit] = useState(false);
+
+  
+
+  //all forms could use protocol and animation for if there is an incorrect input
 
   return (
     <BrowserRouter>
@@ -109,6 +130,10 @@ function App() {
           <option value="/">Home</option>
           <option value="/popular">Popular</option>
           <option value="/create-post">Create Post</option>
+          {followedSubgeddits && followedSubgeddits.map((subgeddit) => {
+            return <option key={subgeddit} value={`/subgeddits/${subgeddit}`}>{subgeddit}</option>
+          })
+          }
         </select>
         <SearchBar
           className="ml-10 w-[32vw] border-gray-900 font-medium text-gray-200 focus:border-gray-50"
@@ -117,32 +142,45 @@ function App() {
         <div className="ml-14 flex gap-5">
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger className='icon' style={{backgroundImage: "url('/images/notification.svg')"}}></TooltipTrigger>
-              <TooltipContent >
+              <TooltipTrigger
+                className="icon"
+                style={{ backgroundImage: "url('/images/notification.svg')" }}
+              ></TooltipTrigger>
+              <TooltipContent>
                 <p>Notifications</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger className='icon' style={{backgroundImage: "url('/images/message.svg')"}}></TooltipTrigger>
-              <TooltipContent >
+              <TooltipTrigger
+                className="icon"
+                style={{ backgroundImage: "url('/images/message.svg')" }}
+              ></TooltipTrigger>
+              <TooltipContent>
                 <p>Messaging</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger className='icon' style={{backgroundImage: "url('/images/advertise.svg')"}}></TooltipTrigger>
-              <TooltipContent >
+              <TooltipTrigger
+                className="icon"
+                style={{ backgroundImage: "url('/images/advertise.svg')" }}
+              ></TooltipTrigger>
+              <TooltipContent>
                 <p>Advertise</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger  onClick={() => setCreateSubgeddit(true)} className='icon mr-16' style={{backgroundImage: "url('/images/add.svg')"}}></TooltipTrigger>
-              <TooltipContent >
+              <TooltipTrigger
+                onClick={() => setCreateSubgeddit(true)}
+                className="icon mr-16"
+                style={{ backgroundImage: "url('/images/add.svg')" }}
+              ></TooltipTrigger>
+              <TooltipContent>
                 <p>Create Community</p>
               </TooltipContent>
             </Tooltip>
@@ -153,9 +191,9 @@ function App() {
           <SubgedditForm setCreateSubgeddit={setCreateSubgeddit} />
         )}
 
-        {showLogIn && (
+        {DisplayLogin && (
           <Loginform
-            setShowLogIn={setShowLogIn}
+            setDisplayLogin={setDisplayLogin}
             setLoggedIn={setLoggedIn}
             setUser={setUser}
           />
@@ -206,7 +244,12 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/popular" element={<Popular />} />
-        <Route path="/create-post" element={<CreatePost />} />
+        <Route
+          path="/create-post"
+          element={
+            <CreatePost loggedIn={loggedIn} setDisplayLogin={setDisplayLogin} />
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
