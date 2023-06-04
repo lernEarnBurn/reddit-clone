@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
 import { Home } from './components/home';
 import { Popular } from './components/popular';
 import { SearchBar } from './components/ui/searchBar';
@@ -57,36 +57,6 @@ function useLogin() {
   };
 }
 
-function useSelectNavigation() {
-  const selectRef = useRef<HTMLSelectElement>(null);
-  const [currentSelectValue, setSelectValue] = useState('/');
-
-  useEffect(() => {
-    const savedValue = localStorage.getItem('selectedValue');
-    if (savedValue && savedValue !== currentSelectValue) {
-      setSelectValue(savedValue);
-      if (selectRef.current) {
-        selectRef.current.value = savedValue;
-      }
-    }
-  }, [currentSelectValue]);
-
-  function changeRoute() {
-    const selectedValue = selectRef.current?.value;
-    if (selectedValue) {
-      localStorage.setItem('selectedValue', selectedValue);
-      window.location.href = selectedValue;
-
-      setSelectValue(selectedValue);
-    }
-  }
-
-  return {
-    selectRef,
-    currentSelectValue,
-    changeRoute,
-  };
-}
 
 function App() {
   const {
@@ -99,7 +69,6 @@ function App() {
     loading,
     followedSubgeddits,
   } = useLogin();
-  const { selectRef, currentSelectValue, changeRoute } = useSelectNavigation();
 
   function logOut() {
     setUser('');
@@ -115,34 +84,56 @@ function App() {
   const [createSubgeddit, setCreateSubgeddit] = useState(false);
 
   //all forms could use protocol and animation for if there is an incorrect input
+  const [displayOptions, setDisplayOptions] = useState(false)
+
+  function toggleDisplayOptions(){
+    if(displayOptions){
+      setDisplayOptions(false)
+    }else{
+      setDisplayOptions(true)
+    }
+  }
+
+  const [lastClicked, setLastClicked] = useState<string>("Home")
+
+  function onLinkClick(event:React.MouseEvent<HTMLAnchorElement>){
+    const target = event.target as HTMLAnchorElement
+    setDisplayOptions(false)
+    setLastClicked(target.textContent || '')
+  }
+
 
   return (
     <BrowserRouter>
       <div className="h-10vh z-6 flex w-full items-center bg-gray-800 bg-opacity-95">
         <div className="logo mr-6"></div>
-        <select
-          ref={selectRef}
-          onChange={changeRoute}
-          className="primary-foreground w-[14vw] bg-gray-800 p-1"
-          value={currentSelectValue}
-        >
-          <option value="/">Home</option>
-          <option value="/popular">Popular</option>
-          <option value="/create-post">Create Post</option>
-          {followedSubgeddits &&
-            followedSubgeddits.map((subgeddit) => {
-              return (
-                <option key={subgeddit} value={`/subgeddits/${subgeddit}`}>
-                  {subgeddit}
-                </option>
-              );
-            })}
-        </select>
+        <div className='top-3 left-52 absolute'>
+          <div onClick={toggleDisplayOptions} className='primary-foreground w-[14vw] bg-gray-800 p-1 hover:border hover:border-white rounded-sm text-lg text-center'>{lastClicked}</div>
+          {displayOptions && (
+            <div className='mt-2 bg-gray-800 rounded-sm primary-foreground flex flex-col'>
+              <Link onClick={onLinkClick} className='text-lg text-center hover:bg-gray-500 hover:text-gray-900' to="/">Home</Link>
+              <Link onClick={onLinkClick} className='text-lg text-center hover:bg-gray-500 hover:text-gray-900' to="/popular">Popular</Link>
+              <Link onClick={onLinkClick} className='text-lg text-center hover:bg-gray-500 hover:text-gray-900' to="/create-post">Create Post</Link>
+              {followedSubgeddits && 
+                followedSubgeddits.map((subgeddit) => {
+                  return (
+                    <Link 
+                      onClick={onLinkClick} 
+                      className='text-lg text-center hover:bg-gray-500 hover:text-gray-900' 
+                      key={subgeddit} 
+                      to={`/subgeddits/${subgeddit}`}>
+                      {subgeddit}
+                    </Link>
+                  );
+                })}
+            </div>
+            )}
+        </div>
         <SearchBar
-          className="ml-10 w-[32vw] border-gray-900 font-medium text-gray-200 focus:border-gray-50"
+          className="ml-60 w-[32vw] border-gray-900 font-medium text-gray-200 focus:border-gray-50"
           placeholder="Search Geddit"
         />
-        <div className="ml-14 flex gap-5">
+        <div className="ml-10 flex gap-5">
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger
@@ -253,6 +244,9 @@ function App() {
             <CreatePost loggedIn={loggedIn} setDisplayLogin={setDisplayLogin} />
           }
         />
+        <Route path="/subgeddits/ShouldHaveFollower" element={<Home/>}/>
+        /*map out some dynamic routes similar to select options */
+
       </Routes>
     </BrowserRouter>
   );
