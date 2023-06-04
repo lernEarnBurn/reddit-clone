@@ -1,7 +1,11 @@
 import { PageInfo } from './pageInfo';
 import { Post } from './post';
 
-export function ContentScreen() {
+interface contentScreenProps {
+  subgeddit: string
+}
+
+export function ContentScreen(props: contentScreenProps) {
   return (
     <div className="flex justify-center">
       <div className="flex-col">
@@ -40,7 +44,7 @@ export function ContentScreen() {
           upvotes={88}
         />
       </div>
-      <PageInfo subgeddit="AmITheAssholes" />
+      <PageInfo subgeddit={props.subgeddit} />
     </div>
   );
 }
