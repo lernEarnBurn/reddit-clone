@@ -1,14 +1,13 @@
 import './App.css';
 import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
-import { Home } from './components/home';
-import { Popular } from './components/popular';
 import { SearchBar } from './components/ui/searchBar';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from './components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { Loginform } from './components/loginForm';
 import { CreatePost } from './components/createPost';
 import { SubgedditForm } from './components/subgedditForm';
+import { ContentScreen } from './components/contentScreen';
 import {
   Tooltip,
   TooltipContent,
@@ -20,11 +19,12 @@ import { getAuth, signOut } from 'firebase/auth';
 
 import { getUsersSubgeddits } from './modules/getUsersSubgeddits';
 
+
 function useLogin() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [DisplayLogin, setDisplayLogin] = useState(false);
   const [user, setUser] = useState('');
-  const [loading, setLoading] = useState(true);
+
   const [followedSubgeddits, setFollowedSubgeddits] = useState<
     string[] | undefined
   >(undefined);
@@ -36,7 +36,6 @@ function useLogin() {
         setLoggedIn(true);
         setDisplayLogin(false);
         setUser(savedUser);
-        setLoading(false);
         const userFollowedSubgeddits = await getUsersSubgeddits(savedUser);
         setFollowedSubgeddits(userFollowedSubgeddits);
       }
@@ -52,7 +51,6 @@ function useLogin() {
     setDisplayLogin,
     user,
     setUser,
-    loading,
     followedSubgeddits,
   };
 }
@@ -66,7 +64,6 @@ function App() {
     setDisplayLogin,
     user,
     setUser,
-    loading,
     followedSubgeddits,
   } = useLogin();
 
@@ -202,23 +199,7 @@ function App() {
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </>
-        ) : loading ? (
-          /*Implement skeleton from shadcn to allow for a smother load of user */
-          <div className="primary-foreground absolute right-4  flex items-start justify-center rounded-md bg-gray-900">
-            <Avatar className="h-[6vh] w-[4.5vw] bg-contain ">
-              <AvatarImage src="/images/stockAvatar.png" />
-            </Avatar>
-            <div className="flex-col">
-              <p className="mt-.5 mr-4">{user}</p>
-              <p
-                onClick={logOut}
-                className="right-30 top-5.5 absolute cursor-pointer text-xs text-gray-100 underline"
-              >
-                Log Out
-              </p>
-            </div>
-          </div>
-        ) : (
+        )  : (
           <div className="primary-foreground absolute right-4  flex items-start justify-center rounded-md bg-gray-900">
             <Avatar className="h-[6vh] w-[4.5vw] bg-contain ">
               <AvatarImage src="/images/stockAvatar.png" />
@@ -235,18 +216,20 @@ function App() {
           </div>
         )}
       </div>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/popular" element={<Popular />} />
+      <Routes> 
+        <Route path="/" element={<ContentScreen subgeddit='Home' />} />
+        <Route path="/popular" element={<ContentScreen subgeddit='Popular' />} />
         <Route
           path="/create-post"
           element={
             <CreatePost loggedIn={loggedIn} setDisplayLogin={setDisplayLogin} />
           }
         />
-        <Route path="/subgeddits/ShouldHaveFollower" element={<Home/>}/>
-        /*map out some dynamic routes similar to select options */
-
+        {/*None of this stuff exists if you don't follow the subgeddit which at this point if you created it*/}
+        {followedSubgeddits && 
+          followedSubgeddits.map((subgeddit) => {
+            return <Route key={subgeddit} path={`/subgeddits/${subgeddit}`} element={<ContentScreen subgeddit={subgeddit}/>}/>
+        })}
       </Routes>
     </BrowserRouter>
   );
