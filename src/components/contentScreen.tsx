@@ -2,7 +2,7 @@ import { PageInfo } from './pageInfo';
 import { Post } from './post';
 import { useEffect, useState } from 'react';
 import { getAuth } from 'firebase/auth';
-import { collection, getFirestore, getDocs, query, where } from 'firebase/firestore';
+import { collection, getFirestore, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
 
 import { DocumentData } from 'firebase/firestore';
 
@@ -20,10 +20,17 @@ async function handlePopularContent(){
   return
 }
 
+
 export function ContentScreen(props: contentScreenProps) {
 
-  const [subgedditData, setSubgedditData] = useState<DocumentData>({name: '', description: '', posts: [], followers: 0, leader: ''})
+  const [subgedditData, setSubgedditData] = useState<DocumentData>({name: 'Home', 
+                                                                    description: 'This is the Home Page Where you can view posts from all of your followed subgeddits.', 
+                                                                    posts: [], 
+                                                                    followers: 0,
+                                                                    leader: ''})
 
+  const [posts, setPosts] = useState<DocumentData[] | null>(null)
+  //bug: only displays a subgeddits post if click to a different one (delayed effect)
   useEffect(() => {
     async function getSubgedditData() {
       if(props.subgeddit !== "Home" && props.subgeddit !== "Popular"){
@@ -36,16 +43,52 @@ export function ContentScreen(props: contentScreenProps) {
           const documentSnapshot = querySnapshot.docs[0];        
           const data = documentSnapshot.data();
           setSubgedditData(data)
+          
         }
 
       }else if(props.subgeddit === "Home"){
         await handleHomeContent()
+        setSubgedditData({name: 'Home', 
+                          description: 'This is the Home Page Where you can view posts from all of your followed subgeddits.', 
+                          posts: [], 
+                          followers: 0,
+                          leader: ''})
       }else if(props.subgeddit === "Popular"){
         await handlePopularContent()
+        setSubgedditData({name: 'Home', 
+                          description: 'This is the Popular Page Where you can view popular posts and discover new subgeddits.', 
+                          posts: [], 
+                          followers: 0,
+                          leader: ''})
       }
     }
 
-    getSubgedditData();
+    async function fetchPosts(postIds: string[]): Promise<void> {
+      if(postIds.length > 0){
+
+        const postStorage: DocumentData[] = []
+        const db = getFirestore();
+        
+        for (const id of postIds) {
+          const postRef = doc(db, 'posts', id); 
+
+          try {
+            const postSnapshot = await getDoc(postRef);
+            if (postSnapshot.exists()) {
+              postStorage.push(postSnapshot.data());
+            }
+          } catch (error) {
+            console.error(`Error fetching document with ID ${id}:`, error);
+          }
+        }
+        console.log(postStorage)
+        setPosts(postStorage);
+      }
+    }
+    
+    setPosts(null)
+    getSubgedditData().then(() => fetchPosts(subgedditData.posts))
+        
   }, [props.subgeddit]);
 
   return (
@@ -61,30 +104,18 @@ export function ContentScreen(props: contentScreenProps) {
             <div>New</div>
           </div>
         </div>
-        <Post
-          content="https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=449&q=80"
-          title="making props to work for posts"
-          user="lerner1737@gmail.com"
-          subgeddit="AmITheAsshole"
-          timeStamp="3 days ago"
-          upvotes={88}
-        />
-        <Post
-          content="https://images.unsplash.com/photo-1517423440428-a5a00ad493e8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=449&q=80"
-          title="making props to work for posts"
-          user="lerner1737@gmail.com"
-          subgeddit="AmITheAsshole"
-          timeStamp="3 days ago"
-          upvotes={88}
-        />
-        <Post
-          content="://images.unsplash.com/photo-1517423440428-a5a00ad4 93e8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by 1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=449&q=80"
-          title="making props to work for posts"
-          user="lerner1737@gmail.com"
-          subgeddit="AmITheAsshole"
-          timeStamp="3 days ago"
-          upvotes={88}
-        />
+        {posts && posts.map((post, index) => {
+          return <Post 
+                    content={post.content}  
+                    title={post.title}
+                    user={post.postedBy}
+                    subgeddit={post.subgeddit}
+                    timeStamp={post.timePosted}
+                    upvotes={post.upvotes}
+                    key={index}
+                  />
+        })}
+       
       </div>
       <PageInfo subgeddit={props.subgeddit} subgedditObj={subgedditData} />
     </div>
