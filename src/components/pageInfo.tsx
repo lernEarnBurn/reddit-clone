@@ -8,24 +8,22 @@ import { DocumentData } from 'firebase/firestore';
 
 import { Link } from 'react-router-dom';
 
-
 interface PageInfoProps {
   subgeddit: string;
-  subgedditObj: DocumentData
+  subgedditObj: DocumentData;
 }
 
 export function PageInfo(props: PageInfoProps) {
-
   useEffect(() => {
-    if(props.subgeddit === "Home" || props.subgeddit === "Popular"){
-      setIsRealSubgeddit(false)
-    }else{
-      setIsRealSubgeddit(true)
+    if (props.subgeddit === 'Home' || props.subgeddit === 'Popular') {
+      setIsRealSubgeddit(false);
+    } else {
+      setIsRealSubgeddit(true);
     }
-    
+
     const checkIfFollowingSubgeddit = async () => {
-      const user = getAuth().currentUser?.displayName
-      if(user){
+      const user = getAuth().currentUser?.displayName;
+      if (user) {
         const followedSubgeddits = await getUsersSubgeddits(user);
         for (const subgeddit in followedSubgeddits) {
           if (props.subgeddit === subgeddit) {
@@ -34,48 +32,50 @@ export function PageInfo(props: PageInfoProps) {
         }
       }
     };
-  
+
     checkIfFollowingSubgeddit();
   }, [props.subgeddit]);
 
-  const [followed, setFollowed] = useState<boolean | null>(false)  
-  const [isRealSubgeddit, setIsRealSubgeddit] = useState<boolean | null>(null) 
+  const [followed, setFollowed] = useState<boolean | null>(false);
+  const [isRealSubgeddit, setIsRealSubgeddit] = useState<boolean | null>(null);
 
   return (
-    <div className="ml-2 mt-2 max-w-[20vw] flex-col justify-end rounded-sm bg-gray-800 h-auto pb-4">
+    <div className="ml-2 mt-2 h-auto max-w-[20vw] flex-col justify-end rounded-sm bg-gray-800 pb-4">
       <div className="primary-foreground mt-6 flex justify-center text-2xl font-bold">
         <p>g/{props.subgeddit}</p>
       </div>
-      {(props.subgeddit !== "Home" && props.subgeddit !== "Popular" && followed) ? (
+      {props.subgeddit !== 'Home' &&
+      props.subgeddit !== 'Popular' &&
+      followed ? (
         <p>not followed</p>
-      ) : (props.subgeddit !== "Home" && props.subgeddit !== "Popular" && !followed) ? (
+      ) : props.subgeddit !== 'Home' &&
+        props.subgeddit !== 'Popular' &&
+        !followed ? (
         <p>followed</p>
-      ): (
-        null
-      )}
+      ) : null}
       <div className="primary-foreground px-6 py-4">
         {props.subgedditObj.description}
       </div>
-      <div >
+      <div>
         {isRealSubgeddit ? (
-           <> 
+          <>
             <div className="flex justify-center gap-14">
               <div className="text-center text-xs text-gray-100">
-                <div className="text-2xl">{props.subgedditObj.followers}</div>Followers
+                <div className="text-2xl">{props.subgedditObj.followers}</div>
+                Followers
               </div>
               <div className="text-center text-xs text-gray-100">
                 <div className="text-2xl">1</div>Online RN
               </div>
             </div>
-            <Link to="/create-post"><Button className="ml-[1vw] mt-2 h-[5vh] w-[18vw]" >Create Post</Button></Link>
-            </>
-        ) : (
-          null
-        )}
-        
+            <Link to="/create-post">
+              <Button className="ml-[1vw] mt-2 h-[5vh] w-[18vw]">
+                Create Post
+              </Button>
+            </Link>
+          </>
+        ) : null}
       </div>
-      
-
     </div>
   );
 }

@@ -25,7 +25,7 @@ export function SubgedditForm(props: SubgedditFormProps) {
 
   async function createCommunity() {
     try {
-      //do a loading circle on button 
+      //do a loading circle on button
       await addDoc(collection(getFirestore(), 'subgeddits'), {
         name: nameRef.current?.value,
         description: descriptRef.current?.value,
@@ -48,8 +48,7 @@ export function SubgedditForm(props: SubgedditFormProps) {
         following: arrayUnion(nameRef.current?.value),
       });
 
-      location.reload()
-
+      location.reload();
     } catch (error) {
       console.error('Error writing new message to Firebase Database', error);
     }

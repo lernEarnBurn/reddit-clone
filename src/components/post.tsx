@@ -22,7 +22,7 @@ export function Post(props: PostProps) {
     <div className="hover:border-1 mt-2 flex w-[40vw] rounded-sm bg-gray-800 px-3  py-2 text-gray-100 hover:border hover:border-gray-50">
       <div className="mr-4 mt-1 flex-col">
         <div className="up h-[3vh] w-[1.2vw] bg-cover"></div>
-        <div className="ml-[.2vw] text-sm">{props.upvotes}</div>
+        <div className="ml-[.48vw] text-sm">{props.upvotes}</div>
         <div className="down h-[3vh] w-[1.2vw] bg-cover"></div>
       </div>
       <div className="flex-col justify-center gap-6">

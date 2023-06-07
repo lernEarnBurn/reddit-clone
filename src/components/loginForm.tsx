@@ -71,8 +71,7 @@ export function Loginform(props: LoginProps) {
         props.setUser(String(user.email));
         localStorage.setItem('user', String(user.email));
         await setPersistence(auth, browserSessionPersistence);
-        location.reload()
-
+        location.reload();
       } catch (error: unknown) {
         if (error instanceof Error) {
           const errorMessage = error.message;
@@ -101,8 +100,7 @@ export function Loginform(props: LoginProps) {
         props.setUser(String(user.email));
         localStorage.setItem('user', String(user.email));
         await setPersistence(auth, browserSessionPersistence);
-        location.reload()
-
+        location.reload();
       } catch (error: unknown) {
         if (error instanceof Error) {
           const errorMessage = error.message;

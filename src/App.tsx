@@ -19,7 +19,6 @@ import { getAuth, signOut } from 'firebase/auth';
 
 import { getUsersSubgeddits } from './modules/getUsersSubgeddits';
 
-
 function useLogin() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [DisplayLogin, setDisplayLogin] = useState(false);
@@ -31,7 +30,6 @@ function useLogin() {
 
   useEffect(() => {
     async function fetchLoggedInState() {
-      
       const savedUser = localStorage.getItem('user');
       if (savedUser) {
         setLoggedIn(true);
@@ -55,7 +53,6 @@ function useLogin() {
   };
 }
 
-
 function App() {
   const {
     loggedIn,
@@ -72,7 +69,7 @@ function App() {
     setLoggedIn(false);
     signOut(getAuth());
     localStorage.removeItem('user');
-    location.reload()
+    location.reload();
   }
 
   function displayLogInForm() {
@@ -82,54 +79,74 @@ function App() {
   const [createSubgeddit, setCreateSubgeddit] = useState(false);
 
   //all forms could use protocol and animation for if there is an incorrect input
-  const [displayOptions, setDisplayOptions] = useState(false)
+  const [displayOptions, setDisplayOptions] = useState(false);
 
-  function toggleDisplayOptions(){
-    if(displayOptions){
-      setDisplayOptions(false)
-    }else{
-      setDisplayOptions(true)
+  function toggleDisplayOptions() {
+    if (displayOptions) {
+      setDisplayOptions(false);
+    } else {
+      setDisplayOptions(true);
     }
   }
 
   /*If refresh than it defaults to this need to change functionality so this is always dependent on current subgeddit not this cheap state save */
-  const [lastClicked, setLastClicked] = useState<string>("Home")
+  const [lastClicked, setLastClicked] = useState<string>('Home');
 
-  
-
-  function onLinkClick(event:React.MouseEvent<HTMLAnchorElement>){
-    const target = event.target as HTMLAnchorElement
-    setDisplayOptions(false)
-    setLastClicked(target.textContent || '')
-    
+  function onLinkClick(event: React.MouseEvent<HTMLAnchorElement>) {
+    const target = event.target as HTMLAnchorElement;
+    setDisplayOptions(false);
+    setLastClicked(target.textContent || '');
   }
-
 
   return (
     <BrowserRouter>
       <div className="h-10vh z-6 flex w-full items-center bg-gray-800 bg-opacity-95">
         <div className="logo mr-6"></div>
-        <div className='top-3 left-52 absolute'>
-          <div onClick={toggleDisplayOptions} className='primary-foreground w-[14vw] bg-gray-800 p-1 hover:border hover:border-white rounded-sm text-lg text-center'>{lastClicked}</div>
+        <div className="absolute left-52 top-3">
+          <div
+            onClick={toggleDisplayOptions}
+            className="primary-foreground w-[14vw] rounded-sm bg-gray-800 p-1 text-center text-lg hover:border hover:border-white"
+          >
+            {lastClicked}
+          </div>
           {displayOptions && (
-            <div className='mt-2 bg-gray-800 rounded-sm primary-foreground flex flex-col'>
-              <Link onClick={onLinkClick} className='text-lg text-center hover:bg-gray-500 hover:text-gray-900' to="/">Home</Link>
-              <Link onClick={onLinkClick} className='text-lg text-center hover:bg-gray-500 hover:text-gray-900' to="/popular">Popular</Link>
-              <Link onClick={onLinkClick} className='text-lg text-center hover:bg-gray-500 hover:text-gray-900' to="/create-post">Create Post</Link>
-              {followedSubgeddits && 
+            <div className="primary-foreground mt-2 flex flex-col rounded-sm bg-gray-800">
+              <Link
+                onClick={onLinkClick}
+                className="text-center text-lg hover:bg-gray-500 hover:text-gray-900"
+                to="/"
+              >
+                Home
+              </Link>
+              <Link
+                onClick={onLinkClick}
+                className="text-center text-lg hover:bg-gray-500 hover:text-gray-900"
+                to="/popular"
+              >
+                Popular
+              </Link>
+              <Link
+                onClick={onLinkClick}
+                className="text-center text-lg hover:bg-gray-500 hover:text-gray-900"
+                to="/create-post"
+              >
+                Create Post
+              </Link>
+              {followedSubgeddits &&
                 followedSubgeddits.map((subgeddit) => {
                   return (
-                    <Link 
-                      onClick={onLinkClick} 
-                      className='text-lg text-center hover:bg-gray-500 hover:text-gray-900' 
-                      key={subgeddit} 
-                      to={`/subgeddits/${subgeddit}`}>
+                    <Link
+                      onClick={onLinkClick}
+                      className="text-center text-lg hover:bg-gray-500 hover:text-gray-900"
+                      key={subgeddit}
+                      to={`/subgeddits/${subgeddit}`}
+                    >
                       {subgeddit}
                     </Link>
                   );
                 })}
             </div>
-            )}
+          )}
         </div>
         <SearchBar
           className="ml-60 w-[32vw] border-gray-900 font-medium text-gray-200 focus:border-gray-50"
@@ -204,7 +221,7 @@ function App() {
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
           </>
-        )  : (
+        ) : (
           <div className="primary-foreground absolute right-4  flex items-start justify-center rounded-md bg-gray-900">
             <Avatar className="h-[6vh] w-[4.5vw] bg-contain ">
               <AvatarImage src="/images/stockAvatar.png" />
@@ -221,9 +238,12 @@ function App() {
           </div>
         )}
       </div>
-      <Routes> 
-        <Route path="/" element={<ContentScreen subgeddit='Home' />} />
-        <Route path="/popular" element={<ContentScreen subgeddit='Popular' />} />
+      <Routes>
+        <Route path="/" element={<ContentScreen subgeddit="Home" />} />
+        <Route
+          path="/popular"
+          element={<ContentScreen subgeddit="Popular" />}
+        />
         <Route
           path="/create-post"
           element={
@@ -231,10 +251,16 @@ function App() {
           }
         />
         {/*None of this stuff exists if you don't follow the subgeddit which at this point if you created it*/}
-        {followedSubgeddits && 
+        {followedSubgeddits &&
           followedSubgeddits.map((subgeddit) => {
-            return <Route key={subgeddit} path={`/subgeddits/${subgeddit}`} element={<ContentScreen subgeddit={subgeddit}/>}/>
-        })}
+            return (
+              <Route
+                key={subgeddit}
+                path={`/subgeddits/${subgeddit}`}
+                element={<ContentScreen subgeddit={subgeddit} />}
+              />
+            );
+          })}
       </Routes>
     </BrowserRouter>
   );
