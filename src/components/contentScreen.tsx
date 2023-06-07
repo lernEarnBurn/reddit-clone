@@ -6,6 +6,9 @@ import { collection, getFirestore, getDocs, query, where, doc, getDoc } from 'fi
 
 import { DocumentData } from 'firebase/firestore';
 
+import { ArrowUpSquare } from 'lucide-react';
+import { CalendarDays } from 'lucide-react';
+
 interface contentScreenProps {
   subgeddit: string
 }
@@ -97,13 +100,13 @@ export function ContentScreen(props: contentScreenProps) {
     <div className="flex justify-center items-start">
       <div className="flex-col">
         <div className="mt-2 flex h-[8vh] w-[40vw] items-center justify-evenly rounded-sm bg-gray-800 ">
-          <div className="primary-foreground flex">
-            <img src="/images/add.svg"></img>
-            <div>Top</div>
+          <div className="primary-foreground flex items-center hover:bg-gray-900 px-2 py-1 rounded-sm">
+            <ArrowUpSquare/>
+            <div className='text-xl'>Top</div>
           </div>
-          <div className="primary-foreground flex">
-            <img src="/images/add.svg"></img>
-            <div>New</div>
+          <div className="primary-foreground flex items-center  hover:bg-gray-900 px-2 py-1 rounded-sm">
+            <CalendarDays/>
+            <div className='text-xl'>New</div>
           </div>
         </div>
         {posts.map((post, index) => {
