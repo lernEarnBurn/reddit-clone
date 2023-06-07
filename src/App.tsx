@@ -31,6 +31,7 @@ function useLogin() {
 
   useEffect(() => {
     async function fetchLoggedInState() {
+      
       const savedUser = localStorage.getItem('user');
       if (savedUser) {
         setLoggedIn(true);
@@ -40,7 +41,6 @@ function useLogin() {
         setFollowedSubgeddits(userFollowedSubgeddits);
       }
     }
-
     fetchLoggedInState();
   }, []);
 
@@ -72,9 +72,10 @@ function App() {
     setLoggedIn(false);
     signOut(getAuth());
     localStorage.removeItem('user');
+    location.reload()
   }
 
-  function initiateLogIn() {
+  function displayLogInForm() {
     setDisplayLogin(true);
   }
 
@@ -91,12 +92,16 @@ function App() {
     }
   }
 
+  /*If refresh than it defaults to this need to change functionality so this is always dependent on current subgeddit not this cheap state save */
   const [lastClicked, setLastClicked] = useState<string>("Home")
+
+  
 
   function onLinkClick(event:React.MouseEvent<HTMLAnchorElement>){
     const target = event.target as HTMLAnchorElement
     setDisplayOptions(false)
     setLastClicked(target.textContent || '')
+    
   }
 
 
@@ -191,7 +196,7 @@ function App() {
         )}
         {!loggedIn && localStorage.getItem('user') === null ? (
           <>
-            <Button size={'lg'} variant="default" onClick={initiateLogIn}>
+            <Button size={'lg'} variant="default" onClick={displayLogInForm}>
               Log In
             </Button>
             <Avatar className="ml-8 h-[6vh] w-[4.5vw] bg-contain">

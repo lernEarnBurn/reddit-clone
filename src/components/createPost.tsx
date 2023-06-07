@@ -163,6 +163,8 @@ export function CreatePost(props: CreatePostProps) {
         alert(error);
         console.error('Error writing new message to Firebase Database', error);
       }
+
+      location.reload()
     } else {
       if (subgedditInputRef.current) {
         subgedditInputRef.current.style.borderColor = 'red';
