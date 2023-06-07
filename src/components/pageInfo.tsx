@@ -54,22 +54,25 @@ export function PageInfo(props: PageInfoProps) {
       <div className="primary-foreground px-6 py-4">
         {props.subgedditObj.description}
       </div>
-      <div className="flex justify-center gap-14">
+      <div >
         {isRealSubgeddit ? (
            <> 
-            <div className="text-center text-xs text-gray-100">
-              <div className="text-2xl">{props.subgedditObj.followers}</div>Followers
+            <div className="flex justify-center gap-14">
+              <div className="text-center text-xs text-gray-100">
+                <div className="text-2xl">{props.subgedditObj.followers}</div>Followers
+              </div>
+              <div className="text-center text-xs text-gray-100">
+                <div className="text-2xl">1</div>Online RN
+              </div>
             </div>
-            <div className="text-center text-xs text-gray-100">
-              <div className="text-2xl">1</div>Online RN
-            </div>
+            <Button className="ml-[1vw] mt-2 h-[5vh] w-[18vw]">Create Post</Button>
             </>
         ) : (
           null
         )}
         
       </div>
-      <Button className="ml-[1vw] mt-2 h-[5vh] w-[18vw]">Create Post</Button>
+      
 
     </div>
   );
