@@ -23,16 +23,12 @@ async function handlePopularContent(){
 
 export function ContentScreen(props: contentScreenProps) {
 
-  const [subgedditData, setSubgedditData] = useState<DocumentData>({name: 'Home', 
-                                                                    description: 'This is the Home Page Where you can view posts from all of your followed subgeddits.', 
-                                                                    posts: [], 
-                                                                    followers: 0,
-                                                                    leader: ''})
+  const [subgedditData, setSubgedditData] = useState<DocumentData>({})
 
-  const [posts, setPosts] = useState<DocumentData[] | null>(null)
+  const [posts, setPosts] = useState<DocumentData[]>([])
   //bug: only displays a subgeddits post if click to a different one (delayed effect)
   useEffect(() => {
-    async function getSubgedditData() {
+    async function getSubgedditData():Promise<void> {
       if(props.subgeddit !== "Home" && props.subgeddit !== "Popular"){
         const db = getFirestore();
         const collectionRef = collection(db, 'subgeddits');
@@ -43,35 +39,43 @@ export function ContentScreen(props: contentScreenProps) {
           const documentSnapshot = querySnapshot.docs[0];        
           const data = documentSnapshot.data();
           setSubgedditData(data)
-          
+                    
         }
 
       }else if(props.subgeddit === "Home"){
-        await handleHomeContent()
         setSubgedditData({name: 'Home', 
                           description: 'This is the Home Page Where you can view posts from all of your followed subgeddits.', 
                           posts: [], 
                           followers: 0,
                           leader: ''})
+        await handleHomeContent()
+        
       }else if(props.subgeddit === "Popular"){
-        await handlePopularContent()
-        setSubgedditData({name: 'Home', 
+        setSubgedditData({name: 'Popular', 
                           description: 'This is the Popular Page Where you can view popular posts and discover new subgeddits.', 
                           posts: [], 
                           followers: 0,
                           leader: ''})
-      }
-    }
-
-    async function fetchPosts(postIds: string[]): Promise<void> {
-      if(postIds.length > 0){
-
-        const postStorage: DocumentData[] = []
-        const db = getFirestore();
+        await handlePopularContent()
         
+      }  
+    }    
+    getSubgedditData()
+
+  }, [props.subgeddit]);
+
+
+  useEffect(() => {
+    setPosts([])
+
+    async function fetchPosts(): Promise<void> {
+      const postIds = await subgedditData.posts
+      const postStorage: DocumentData[] = []
+      const db = getFirestore();
+      if (postIds) {
         for (const id of postIds) {
           const postRef = doc(db, 'posts', id); 
-
+        
           try {
             const postSnapshot = await getDoc(postRef);
             if (postSnapshot.exists()) {
@@ -81,15 +85,13 @@ export function ContentScreen(props: contentScreenProps) {
             console.error(`Error fetching document with ID ${id}:`, error);
           }
         }
-        console.log(postStorage)
         setPosts(postStorage);
       }
     }
-    
-    setPosts(null)
-    getSubgedditData().then(() => fetchPosts(subgedditData.posts))
-        
-  }, [props.subgeddit]);
+
+    fetchPosts()
+  }, [subgedditData]);
+
 
   return (
     <div className="flex justify-center items-start">
@@ -104,7 +106,8 @@ export function ContentScreen(props: contentScreenProps) {
             <div>New</div>
           </div>
         </div>
-        {posts && posts.map((post, index) => {
+        {posts.map((post, index) => {
+          //this shit is running everytime i hit select
           return <Post 
                     content={post.content}  
                     title={post.title}
