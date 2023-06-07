@@ -6,6 +6,8 @@ import { getAuth } from 'firebase/auth';
 
 import { DocumentData } from 'firebase/firestore';
 
+import { Link } from 'react-router-dom';
+
 
 interface PageInfoProps {
   subgeddit: string;
@@ -65,7 +67,7 @@ export function PageInfo(props: PageInfoProps) {
                 <div className="text-2xl">1</div>Online RN
               </div>
             </div>
-            <Button className="ml-[1vw] mt-2 h-[5vh] w-[18vw]">Create Post</Button>
+            <Link to="/create-post"><Button className="ml-[1vw] mt-2 h-[5vh] w-[18vw]" >Create Post</Button></Link>
             </>
         ) : (
           null
