@@ -121,7 +121,7 @@ export function ContentScreen(props: contentScreenProps) {
               title={post.title}
               user={post.postedBy}
               subgeddit={post.subgeddit}
-              timeStamp={post.timePosted}
+              timePosted={post.timePosted}
               upvotes={post.upvotes}
               key={index}
             />

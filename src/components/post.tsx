@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react';
 
+import { getFirestore, increment, doc, updateDoc } from 'firebase/firestore';
+
+import { getDocumentIdFromField } from '../modules/getIdFromField';
+
 interface PostProps {
   content: string;
   title: string;
   user: string;
   subgeddit: string;
-  timeStamp: string;
+  timePosted: Date;
   upvotes: number;
 }
 
@@ -18,12 +22,86 @@ export function Post(props: PostProps) {
     }
   }, [props.content]);
 
+  //might need to refresh to display change 
+  //so instead maybe make it a temporary superficial
+  //frontend increment and then it'll be caught up for real next time
+  const [upvotesAmount, setUpvotesAmount] = useState(props.upvotes)
+  const [alreadyIncremented, setAlreadyIncremented] = useState(false)
+  const [alreadyDecremented, setAlreadyDecremented] = useState(false)
+
+  async function incrementUpvotes(): Promise<void>{
+    if(!alreadyIncremented){
+      const postId = await getDocumentIdFromField('posts', 'timePosted', props.timePosted)
+      if(alreadyDecremented){
+        try { 
+          const postRef = doc(getFirestore(), 'posts', postId);
+          updateDoc(postRef, {
+            upvotes: increment(2),
+          })
+
+          setUpvotesAmount(upvotesAmount + 2)
+        }catch(error){
+          console.log(error)
+        }
+      }else{
+      
+        try { 
+          const postRef = doc(getFirestore(), 'posts', postId);
+          updateDoc(postRef, {
+            upvotes: increment(1),
+          })
+
+          setUpvotesAmount(upvotesAmount + 1)
+        }catch(error){
+          console.log(error)
+        }
+    }
+
+        setAlreadyIncremented(true)
+        setAlreadyDecremented(false)
+    }
+  }
+
+  async function decrementUpvotes(): Promise<void>{
+    if(!alreadyDecremented){
+      const postId = await getDocumentIdFromField('posts', 'timePosted', props.timePosted)
+
+      if(alreadyIncremented){
+        try { 
+          const postRef = doc(getFirestore(), 'posts', postId);
+          updateDoc(postRef, {
+            upvotes: increment(-2),
+        })
+
+          setUpvotesAmount(upvotesAmount - 2)
+        }catch(error){
+          console.log(error)
+        }
+      }else{
+      
+        try { 
+          const postRef = doc(getFirestore(), 'posts', postId);
+          updateDoc(postRef, {
+            upvotes: increment(-1),
+          })
+
+          setUpvotesAmount(upvotesAmount - 1)
+        }catch(error){
+          console.log(error)
+        }
+      }
+
+      setAlreadyIncremented(false)
+      setAlreadyDecremented(true)
+    }
+  }
+
   return (
     <div className="hover:border-1 mt-2 flex w-[40vw] rounded-sm bg-gray-800 px-3  py-2 text-gray-100 hover:border hover:border-gray-50">
       <div className="mr-4 mt-1 flex-col">
-        <div className="up h-[3vh] w-[1.2vw] bg-cover"></div>
-        <div className="ml-[.48vw] text-sm">{props.upvotes}</div>
-        <div className="down h-[3vh] w-[1.2vw] bg-cover"></div>
+        <button className={alreadyIncremented ? 'clicked-up h-[3vh] w-[1.2vw] bg-cover' : 'up h-[3vh] w-[1.2vw] bg-cover'}  onClick={incrementUpvotes}></button>
+        <div className="ml-[.48vw] text-sm">{upvotesAmount}</div>
+        <button className={alreadyDecremented ? 'clicked-down h-[3vh] w-[1.2vw] bg-cover' : 'down h-[3vh] w-[1.2vw] bg-cover'} onClick={decrementUpvotes}></button>
       </div>
       <div className="flex-col justify-center gap-6">
         <div className="flex items-center gap-2">
@@ -35,7 +113,7 @@ export function Post(props: PostProps) {
             <span className="cursor-pointer hover:underline ">
               u/{props.user}
             </span>{' '}
-            {props.timeStamp}
+            {props.timePosted.toString()}
           </div>
         </div>
         <div className="primary-foreground mb-2 text-xl">{props.title}</div>

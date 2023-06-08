@@ -23,8 +23,17 @@ body {
   border-bottom: #f08a5d 3px solid;
 }
 
+.clicked-up {
+  background-image: url('/images/clickedUp.png');
+}
+
 .up {
   background-image: url('/images/defaultUp.png');
+}
+
+.clicked-down {
+  background-image: url('/images/clickedDown.png');
+  
 }
 
 .down {
