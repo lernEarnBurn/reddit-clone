@@ -17,50 +17,62 @@ import { ArrowUpSquare } from 'lucide-react';
 import { CalendarDays } from 'lucide-react';
 
 import { getUsersSubgeddits } from '../modules/getUsersSubgeddits';
+import { getNotUsersSubgeddits } from '../modules/getNotUsersSubgeddits';
 
 interface contentScreenProps {
   subgeddit: string;
-  user: string
+  user: string;
 }
 
 //add caching to reduce speeds when refreshing pages
-
-async function handlePopularContent() {
-  return;
-}
-
 export function ContentScreen(props: contentScreenProps) {
   const [subgedditData, setSubgedditData] = useState<DocumentData>({});
 
   const [posts, setPosts] = useState<DocumentData[]>([]);
 
+  async function fetchPopularPostIds(): Promise<DocumentData[]> {
+    const notFollowedSubgedditsIds = await getNotUsersSubgeddits(props.user);
 
-  //handle case if not logged in (few places around application need this as well)
-  async function fetchHomePostIds(): Promise<DocumentData[]> {
-    const followedSubgedditsIds = await getUsersSubgeddits(props.user)
-    
-    let followedPosts: DocumentData[] = []
-    if(followedSubgedditsIds){
-      for(const subgeddit of followedSubgedditsIds){
-
+    let notFollowedPosts: DocumentData[] = [];
+    if (notFollowedSubgedditsIds) {
+      for (const subgeddit of notFollowedSubgedditsIds) {
         const collectionRef = collection(getFirestore(), 'subgeddits');
         const q = query(collectionRef, where('name', '==', subgeddit));
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
           const documentSnapshot = querySnapshot.docs[0];
-          const data = documentSnapshot.data()
-         
-          followedPosts = [...followedPosts, ...data.posts]
+          const data = documentSnapshot.data();
+
+          notFollowedPosts = [...notFollowedPosts, ...data.posts];
         }
       }
     }
-    return followedPosts
-    
-    
+    return notFollowedPosts;
   }
 
+  //handle case if not logged in (few places around application need this as well)
+  async function fetchHomePostIds(): Promise<DocumentData[]> {
+    const followedSubgedditsIds = await getUsersSubgeddits(props.user);
 
-  
+    let followedPosts: DocumentData[] = [];
+    if (followedSubgedditsIds) {
+      for (const subgeddit of followedSubgedditsIds) {
+        const collectionRef = collection(getFirestore(), 'subgeddits');
+        const q = query(collectionRef, where('name', '==', subgeddit));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          const documentSnapshot = querySnapshot.docs[0];
+          const data = documentSnapshot.data();
+
+          followedPosts = [...followedPosts, ...data.posts];
+        }
+      }
+    }
+    return followedPosts;
+  }
+
+  //Home is base case so on first load and refreshes its not working
+  //probably have to change how the subgeddit State is dished in App.tsx
   useEffect(() => {
     async function getSubgedditData(): Promise<void> {
       if (props.subgeddit !== 'Home' && props.subgeddit !== 'Popular') {
@@ -75,26 +87,27 @@ export function ContentScreen(props: contentScreenProps) {
           setSubgedditData(data);
         }
       } else if (props.subgeddit === 'Home') {
-        await fetchHomePostIds().then((postIds: DocumentData[])=>{setSubgedditData({
-                                              name: 'Home',
-                                              description:
-                                                'This is the Home Page Where you can view posts from all of your followed subgeddits.',
-                                              posts: postIds,
-                                              followers: 0,
-                                              leader: '',
-                                            });});
-        
-      } else if (props.subgeddit === 'Popular') {
-        await handlePopularContent();
-        setSubgedditData({
-          name: 'Popular',
-          description:
-            'This is the Popular Page Where you can view popular posts and discover new subgeddits.',
-          posts: [],
-          followers: 0,
-          leader: '',
+        await fetchHomePostIds().then((postIds: DocumentData[]) => {
+          setSubgedditData({
+            name: 'Home',
+            description:
+              'This is the Home Page Where you can view posts from all of your followed subgeddits.',
+            posts: postIds,
+            followers: 0,
+            leader: '',
+          });
         });
-
+      } else if (props.subgeddit === 'Popular') {
+        await fetchPopularPostIds().then((postIds: DocumentData[]) => {
+          setSubgedditData({
+            name: 'Popular',
+            description:
+              'This is the Popular Page Where you can discover new communitys by seeing what everybody else likes.',
+            posts: postIds,
+            followers: 0,
+            leader: '',
+          });
+        });
       }
     }
     getSubgedditData();
@@ -121,6 +134,7 @@ export function ContentScreen(props: contentScreenProps) {
             console.error(`Error fetching document with ID ${id}:`, error);
           }
         }
+        //its at this point that the top or new filter should be applied to posts
         setPosts(postStorage);
       }
     }
