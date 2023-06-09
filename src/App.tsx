@@ -239,10 +239,10 @@ function App() {
         )}
       </div>
       <Routes>
-        <Route path="/" element={<ContentScreen subgeddit="Home" />} />
+        <Route path="/" element={<ContentScreen user={user} subgeddit="Home" />} />
         <Route
           path="/popular"
-          element={<ContentScreen subgeddit="Popular" />}
+          element={<ContentScreen user={user} subgeddit="Popular" />}
         />
         <Route
           path="/create-post"
@@ -257,7 +257,7 @@ function App() {
               <Route
                 key={subgeddit}
                 path={`/subgeddits/${subgeddit}`}
-                element={<ContentScreen subgeddit={subgeddit} />}
+                element={<ContentScreen user={user} subgeddit={subgeddit} />}
               />
             );
           })}

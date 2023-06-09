@@ -1,7 +1,6 @@
 import { PageInfo } from './pageInfo';
 import { Post } from './post';
 import { useEffect, useState } from 'react';
-import { getAuth } from 'firebase/auth';
 import {
   collection,
   getFirestore,
@@ -17,14 +16,14 @@ import { DocumentData } from 'firebase/firestore';
 import { ArrowUpSquare } from 'lucide-react';
 import { CalendarDays } from 'lucide-react';
 
+import { getUsersSubgeddits } from '../modules/getUsersSubgeddits';
+
 interface contentScreenProps {
   subgeddit: string;
+  user: string
 }
 
-async function handleHomeContent() {
-  const user = getAuth().currentUser?.displayName;
-  return;
-}
+//add caching to reduce speeds when refreshing pages
 
 async function handlePopularContent() {
   return;
@@ -34,7 +33,34 @@ export function ContentScreen(props: contentScreenProps) {
   const [subgedditData, setSubgedditData] = useState<DocumentData>({});
 
   const [posts, setPosts] = useState<DocumentData[]>([]);
-  //bug: only displays a subgeddits post if click to a different one (delayed effect)
+
+
+  //handle case if not logged in (few places around application need this as well)
+  async function fetchHomePostIds(): Promise<DocumentData[]> {
+    const followedSubgedditsIds = await getUsersSubgeddits(props.user)
+    
+    let followedPosts: DocumentData[] = []
+    if(followedSubgedditsIds){
+      for(const subgeddit of followedSubgedditsIds){
+
+        const collectionRef = collection(getFirestore(), 'subgeddits');
+        const q = query(collectionRef, where('name', '==', subgeddit));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          const documentSnapshot = querySnapshot.docs[0];
+          const data = documentSnapshot.data()
+         
+          followedPosts = [...followedPosts, ...data.posts]
+        }
+      }
+    }
+    return followedPosts
+    
+    
+  }
+
+
+  
   useEffect(() => {
     async function getSubgedditData(): Promise<void> {
       if (props.subgeddit !== 'Home' && props.subgeddit !== 'Popular') {
@@ -49,16 +75,17 @@ export function ContentScreen(props: contentScreenProps) {
           setSubgedditData(data);
         }
       } else if (props.subgeddit === 'Home') {
-        setSubgedditData({
-          name: 'Home',
-          description:
-            'This is the Home Page Where you can view posts from all of your followed subgeddits.',
-          posts: [],
-          followers: 0,
-          leader: '',
-        });
-        await handleHomeContent();
+        await fetchHomePostIds().then((postIds: DocumentData[])=>{setSubgedditData({
+                                              name: 'Home',
+                                              description:
+                                                'This is the Home Page Where you can view posts from all of your followed subgeddits.',
+                                              posts: postIds,
+                                              followers: 0,
+                                              leader: '',
+                                            });});
+        
       } else if (props.subgeddit === 'Popular') {
+        await handlePopularContent();
         setSubgedditData({
           name: 'Popular',
           description:
@@ -67,12 +94,13 @@ export function ContentScreen(props: contentScreenProps) {
           followers: 0,
           leader: '',
         });
-        await handlePopularContent();
+
       }
     }
     getSubgedditData();
   }, [props.subgeddit]);
 
+  //the top and new functionality is gonna have to be implemented here
   useEffect(() => {
     setPosts([]);
 
