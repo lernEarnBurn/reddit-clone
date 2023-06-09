@@ -239,7 +239,10 @@ function App() {
         )}
       </div>
       <Routes>
-        <Route path="/" element={<ContentScreen user={user} subgeddit="Home" />} />
+        <Route
+          path="/"
+          element={<ContentScreen user={user} subgeddit="Home" />}
+        />
         <Route
           path="/popular"
           element={<ContentScreen user={user} subgeddit="Popular" />}

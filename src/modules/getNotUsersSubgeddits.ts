@@ -17,8 +17,6 @@ export async function getNotUsersSubgeddits(
   const q = query(usersCollectionRef, where('name', '==', username));
   const querySnapshot = await getDocs(q);
 
-  
-
   if (!querySnapshot.empty) {
     const documentSnapshot = querySnapshot.docs[0];
     const userData = documentSnapshot.data() as DocumentData;
@@ -29,27 +27,19 @@ export async function getNotUsersSubgeddits(
     const notFollowing: string[] = [];
 
     try {
-        const querySnapshot = await getDocs(collectionRef);
-  
-        querySnapshot.forEach((doc) => {
-          const subgeddit = doc.data();
-          if (!subgedditsFollowing.includes(subgeddit.name)) {
-            notFollowing.push(subgeddit.name);
-          }
-        });
-  
-        return notFollowing;
-      } catch (error) {
-        console.log('Error getting documents: ', error);
-        return undefined;
-      }
+      const querySnapshot = await getDocs(collectionRef);
+
+      querySnapshot.forEach((doc) => {
+        const subgeddit = doc.data();
+        if (!subgedditsFollowing.includes(subgeddit.name)) {
+          notFollowing.push(subgeddit.name);
+        }
+      });
+
+      return notFollowing;
+    } catch (error) {
+      console.log('Error getting documents: ', error);
+      return undefined;
     }
   }
-  
-  
-  
-  
-  
-  
-  
-  
+}
