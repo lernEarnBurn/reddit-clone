@@ -150,7 +150,8 @@ export function ContentScreen(props: contentScreenProps) {
   //flicker when repeatedly click a sorter
 
   function sortByPopularity(): void{
-    const postsCopy: DocumentData[] = posts.slice()
+    const postsCopy: DocumentData[] = JSON.parse(JSON.stringify(posts))
+    
 
     const length: number = postsCopy.length
     
@@ -170,7 +171,7 @@ export function ContentScreen(props: contentScreenProps) {
   }
 
   function sortByNew(): void {
-    const postsCopy: DocumentData[] = posts.slice()
+    const postsCopy: DocumentData[] = JSON.parse(JSON.stringify(posts))
 
     const length: number = postsCopy.length
     
@@ -192,13 +193,13 @@ export function ContentScreen(props: contentScreenProps) {
     <div className="flex items-start justify-center">
       <div className="flex-col">
         <div className="mt-2 flex h-[8vh] w-[40vw] items-center justify-evenly rounded-sm bg-gray-800 ">
-          <div className="primary-foreground flex items-center rounded-sm px-2 py-1 hover:bg-gray-900">
+          <div onClick={sortByPopularity} className="hover:cursor-pointer primary-foreground flex items-center rounded-sm px-2 py-1 hover:bg-gray-900">
             <ArrowUpSquare />
-            <div onClick={sortByPopularity} className="hover:cursor-pointer text-xl">Top</div>
+            <div  className=" text-xl">Top</div>
           </div>
-          <div className="primary-foreground flex items-center  rounded-sm px-2 py-1 hover:bg-gray-900">
+          <div onClick={sortByNew} className="hover:cursor-pointer primary-foreground flex items-center  rounded-sm px-2 py-1 hover:bg-gray-900">
             <CalendarDays />
-            <div onClick={sortByNew} className="hover:cursor-pointer text-xl">New</div>
+            <div  className=" text-xl">New</div>
           </div>
         </div>
         {posts.map((post) => {
