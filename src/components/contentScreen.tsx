@@ -13,6 +13,8 @@ import {
 
 import { DocumentData } from 'firebase/firestore';
 
+import { v4 as uuidv4 } from 'uuid';
+
 import { ArrowUpSquare } from 'lucide-react';
 import { CalendarDays } from 'lucide-react';
 
@@ -73,6 +75,9 @@ export function ContentScreen(props: contentScreenProps) {
 
   //Home is base case so on first load and refreshes its not working
   //probably have to change how the subgeddit State is dished in App.tsx
+  //lots of issues in terms of refreshes similar to this as well
+
+  //also if rapidly switch it fetches the first subgeddit then the second
   useEffect(() => {
     async function getSubgedditData(): Promise<void> {
       if (props.subgeddit !== 'Home' && props.subgeddit !== 'Popular') {
@@ -142,20 +147,61 @@ export function ContentScreen(props: contentScreenProps) {
     fetchPosts();
   }, [subgedditData]);
 
+  //flicker when repeatedly click a sorter
+
+  function sortByPopularity(): void{
+    const postsCopy: DocumentData[] = posts.slice()
+
+    const length: number = postsCopy.length
+    
+    for (let i = 0; i < length - 1; i++) {
+      for (let j = 0; j < length - i - 1; j++) {
+
+        if (postsCopy[j + 1].upvotes > postsCopy[j].upvotes) {
+
+          const temp: DocumentData = postsCopy[j + 1];
+          postsCopy[j + 1] = postsCopy[j];
+          postsCopy[j] = temp;
+        }
+      }
+    }
+  
+    setPosts(postsCopy)
+  }
+
+  function sortByNew(): void {
+    const postsCopy: DocumentData[] = posts.slice()
+
+    const length: number = postsCopy.length
+    
+    for (let i = 0; i < length - 1; i++) {
+      for (let j = 0; j < length - i - 1; j++) {
+        // Compare adjacent elements
+        if (postsCopy[j + 1].timePosted > postsCopy[j].timePosted) {
+          const temp: DocumentData = postsCopy[j + 1];
+          postsCopy[j + 1] = postsCopy[j];
+          postsCopy[j] = temp;
+        }
+      }
+    }
+  
+    setPosts(postsCopy)
+  }
+
   return (
     <div className="flex items-start justify-center">
       <div className="flex-col">
         <div className="mt-2 flex h-[8vh] w-[40vw] items-center justify-evenly rounded-sm bg-gray-800 ">
           <div className="primary-foreground flex items-center rounded-sm px-2 py-1 hover:bg-gray-900">
             <ArrowUpSquare />
-            <div className="text-xl">Top</div>
+            <div onClick={sortByPopularity} className="hover:cursor-pointer text-xl">Top</div>
           </div>
           <div className="primary-foreground flex items-center  rounded-sm px-2 py-1 hover:bg-gray-900">
             <CalendarDays />
-            <div className="text-xl">New</div>
+            <div onClick={sortByNew} className="hover:cursor-pointer text-xl">New</div>
           </div>
         </div>
-        {posts.map((post, index) => {
+        {posts.map((post) => {
           //this shit is running everytime i hit select
           return (
             <Post
@@ -165,7 +211,7 @@ export function ContentScreen(props: contentScreenProps) {
               subgeddit={post.subgeddit}
               timePosted={post.timePosted}
               upvotes={post.upvotes}
-              key={index}
+              key={uuidv4()}
             />
           );
         })}
