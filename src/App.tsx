@@ -8,6 +8,7 @@ import { Loginform } from './components/loginForm';
 import { CreatePost } from './components/createPost';
 import { SubgedditForm } from './components/subgedditForm';
 import { ContentScreen } from './components/contentScreen';
+import { PostPage } from './components/postPage';
 import {
   Tooltip,
   TooltipContent,
@@ -245,11 +246,11 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<ContentScreen user={user} subgeddit="Home" />}
+          element={<ContentScreen user={user}/>}
         />
         <Route
           path="/popular"
-          element={<ContentScreen user={user} subgeddit="Popular" />}
+          element={<ContentScreen user={user}/>}
         />
         <Route
           path="/create-post"
@@ -257,17 +258,14 @@ function App() {
             <CreatePost loggedIn={loggedIn} setDisplayLogin={setDisplayLogin} />
           }
         />
-        {/*None of this stuff exists if you don't follow the subgeddit which at this point if you created it*/}
-        {followedSubgeddits &&
-          followedSubgeddits.map((subgeddit) => {
-            return (
-              <Route
-                key={uuidv4()}
-                path={`/subgeddits/${subgeddit}`}
-                element={<ContentScreen user={user} subgeddit={subgeddit} />}
-              />
-            );
-          })}
+        <Route
+          path="/subgeddits/:subgeddit/posts/:id"
+          element={<PostPage />}
+        />
+        <Route 
+          path="/subgeddits/:subgeddit"
+          element={<ContentScreen user={user}/>}
+        />
       </Routes>
     </BrowserRouter>
   );

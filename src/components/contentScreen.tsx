@@ -16,6 +16,8 @@ import { DocumentData } from 'firebase/firestore';
 
 import { v4 as uuidv4 } from 'uuid';
 
+import { useLocation, useParams } from 'react-router-dom';
+
 import { ArrowUpSquare } from 'lucide-react';
 import { CalendarDays } from 'lucide-react';
 
@@ -23,12 +25,27 @@ import { getUsersSubgeddits } from '../modules/getUsersSubgeddits';
 import { getNotUsersSubgeddits } from '../modules/getNotUsersSubgeddits';
 
 interface contentScreenProps {
-  subgeddit: string;
   user: string | null;
 }
 
 //add caching to reduce speeds when refreshing pages
 export function ContentScreen(props: contentScreenProps) {
+  const route = useLocation()
+  const { subgeddit: routeSubgeddit } = useParams();
+  const [subgeddit, setSubgeddit] = useState('');
+
+  useEffect(() => {
+    if (route.pathname === '/') {
+      setSubgeddit('Home');
+    } else if (route.pathname === '/popular') {
+      setSubgeddit('Popular');
+    } else {
+      if(routeSubgeddit){
+        setSubgeddit(routeSubgeddit);
+      }
+    }
+  }, [route, routeSubgeddit]);
+
   const [subgedditData, setSubgedditData] = useState<DocumentData>({});
 
   const [posts, setPosts] = useState<DocumentData[]>([]);
@@ -84,27 +101,25 @@ export function ContentScreen(props: contentScreenProps) {
     }
   }
 
-  //Home is base case so on first load and refreshes its not working
-  //probably have to change how the subgeddit State is dished in App.tsx
-  //lots of issues in terms of refreshes similar to this as well
 
   //also if rapidly switch it fetches the first subgeddit then the second
   const [firstEffectCompleted, setFirstEffectCompleted] = useState<boolean>(false)
+  
 
   useEffect(() => {
     async function getSubgedditData(): Promise<void> {
-      if (props.subgeddit !== 'Home' && props.subgeddit !== 'Popular') {
+      if (subgeddit !== 'Home' && subgeddit !== 'Popular') {
         const db = getFirestore();
         const collectionRef = collection(db, 'subgeddits');
 
-        const q = query(collectionRef, where('name', '==', props.subgeddit));
+        const q = query(collectionRef, where('name', '==', subgeddit));
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
           const documentSnapshot = querySnapshot.docs[0];
           const data = documentSnapshot.data();
           setSubgedditData(data);
         }
-      } else if (props.subgeddit === 'Home') {
+      } else if (subgeddit === "Home") {
         await fetchHomePostIds().then((postIds: DocumentData[] | void) => {
           setSubgedditData({
             name: 'Home',
@@ -115,7 +130,7 @@ export function ContentScreen(props: contentScreenProps) {
             leader: '',
           });
         });
-      } else if (props.subgeddit === 'Popular') {
+      } else if (subgeddit === "Popular") {
         await fetchPopularPostIds().then((postIds: DocumentData[] | void) => {
           setSubgedditData({
             name: 'Popular',
@@ -133,9 +148,9 @@ export function ContentScreen(props: contentScreenProps) {
       console.error('Error fetching subgedditData:', error);
       setFirstEffectCompleted(true);
     });
-  }, [props.subgeddit]);
+  }, [subgeddit]);
 
-  //the top and new functionality is gonna have to be implemented here
+
   useEffect(() => {
     if (!firstEffectCompleted || !subgedditData || !subgedditData.posts) {
       return;
@@ -156,16 +171,16 @@ export function ContentScreen(props: contentScreenProps) {
           try {
             const postSnapshot = await getDoc(postRef);
             if (postSnapshot.exists()) {
-              postStorage.push(postSnapshot.data());
+              const postData = postSnapshot.data();
+              const postWithId = { id: postSnapshot.id, ...postData };
+              postStorage.push(postWithId);
               
-            }else{
-              console.log('didnt run 3')
             }
           } catch (error) {
             console.error(`Error fetching document with ID ${id}:`, error);
           }
         }
-        //its at this point that the top or new filter should be applied to posts
+    
         setPosts(postStorage);
       }
     }
@@ -240,11 +255,12 @@ export function ContentScreen(props: contentScreenProps) {
               timePosted={post.timePosted}
               upvotes={post.upvotes}
               key={uuidv4()}
+              id={post.id}
             />
           );
         })}
       </div>
-      <PageInfo subgeddit={props.subgeddit} subgedditObj={subgedditData} />
+      <PageInfo subgeddit={subgeddit} subgedditObj={subgedditData} />
     </div>
   );
 }
