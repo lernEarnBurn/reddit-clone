@@ -104,25 +104,28 @@ export function Post(props: PostProps) {
 
   return (
     <div className="hover:border-1 mt-2 flex w-[40vw] rounded-sm bg-gray-800 px-3  py-2 text-gray-100 hover:border hover:border-gray-50">
-      <div className="mr-4 mt-1 flex-col">
+
+      <div className="mr-4 mt-1">
         <button
           className={
             alreadyIncremented
-              ? 'clicked-up h-[3vh] w-[1.2vw] bg-cover'
-              : 'up h-[3vh] w-[1.2vw] bg-cover'
+              ? 'clicked-up h-[3vh] w-[1.2vw] bg-cover  bg-center'
+              : 'up h-[3vh] w-[1.2vw] bg-cover  bg-center'
           }
           onClick={incrementUpvotes}
         ></button>
-        <div className="ml-[.48vw] text-sm">{upvotesAmount}</div>
+        <div className="-mt-[.65vh]  text-center text-sm">{upvotesAmount}</div>
         <button
           className={
             alreadyDecremented
-              ? 'clicked-down h-[3vh] w-[1.2vw] bg-cover'
-              : 'down h-[3vh] w-[1.2vw] bg-cover'
+              ? 'clicked-down h-[3vh] w-[1.2vw] bg-cover  bg-center'
+              : 'down h-[3vh] w-[1.2vw] bg-cover  bg-center'
           }
           onClick={decrementUpvotes}
         ></button>
       </div>
+
+
       <div className="flex-col justify-center gap-6">
         <div className="flex items-center gap-2">
           <div className="primary-foreground cursor-pointer text-sm hover:underline">
