@@ -9,6 +9,7 @@ import {
   where,
   doc,
   getDoc,
+  DocumentReference,
 } from 'firebase/firestore';
 
 import { DocumentData } from 'firebase/firestore';
@@ -23,7 +24,7 @@ import { getNotUsersSubgeddits } from '../modules/getNotUsersSubgeddits';
 
 interface contentScreenProps {
   subgeddit: string;
-  user: string;
+  user: string | null;
 }
 
 //add caching to reduce speeds when refreshing pages
@@ -32,45 +33,55 @@ export function ContentScreen(props: contentScreenProps) {
 
   const [posts, setPosts] = useState<DocumentData[]>([]);
 
-  async function fetchPopularPostIds(): Promise<DocumentData[]> {
-    const notFollowedSubgedditsIds = await getNotUsersSubgeddits(props.user);
+  async function fetchPopularPostIds(): Promise<DocumentData[] | void> {
+    if(props.user){
+      const notFollowedSubgedditsIds = await getNotUsersSubgeddits(props.user);
 
-    let notFollowedPosts: DocumentData[] = [];
-    if (notFollowedSubgedditsIds) {
-      for (const subgeddit of notFollowedSubgedditsIds) {
-        const collectionRef = collection(getFirestore(), 'subgeddits');
-        const q = query(collectionRef, where('name', '==', subgeddit));
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-          const documentSnapshot = querySnapshot.docs[0];
-          const data = documentSnapshot.data();
+      let notFollowedPosts: DocumentData[] = [];
+      if (notFollowedSubgedditsIds) {
+        for (const subgeddit of notFollowedSubgedditsIds) {
+          const collectionRef = collection(getFirestore(), 'subgeddits');
+          const q = query(collectionRef, where('name', '==', subgeddit));
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            const documentSnapshot = querySnapshot.docs[0];
+            const data = documentSnapshot.data();
 
-          notFollowedPosts = [...notFollowedPosts, ...data.posts];
+            notFollowedPosts = [...notFollowedPosts, ...data.posts];
+          }
         }
       }
+      return notFollowedPosts;
+    }else{
+      //insert not logged in home post algorithm here and return the array of posts
+      console.log('not logged in')
     }
-    return notFollowedPosts;
   }
 
   //handle case if not logged in (few places around application need this as well)
-  async function fetchHomePostIds(): Promise<DocumentData[]> {
-    const followedSubgedditsIds = await getUsersSubgeddits(props.user);
+  async function fetchHomePostIds(): Promise<DocumentData[] | void> {
+    if(props.user){
+      const followedSubgedditsIds = await getUsersSubgeddits(props.user);
 
-    let followedPosts: DocumentData[] = [];
-    if (followedSubgedditsIds) {
-      for (const subgeddit of followedSubgedditsIds) {
-        const collectionRef = collection(getFirestore(), 'subgeddits');
-        const q = query(collectionRef, where('name', '==', subgeddit));
-        const querySnapshot = await getDocs(q);
-        if (!querySnapshot.empty) {
-          const documentSnapshot = querySnapshot.docs[0];
-          const data = documentSnapshot.data();
+      let followedPosts: DocumentData[] = [];
+      if (followedSubgedditsIds) {
+        for (const subgeddit of followedSubgedditsIds) {
+          const collectionRef = collection(getFirestore(), 'subgeddits');
+          const q = query(collectionRef, where('name', '==', subgeddit));
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            const documentSnapshot = querySnapshot.docs[0];
+            const data = documentSnapshot.data();
 
-          followedPosts = [...followedPosts, ...data.posts];
+            followedPosts = [...followedPosts, ...data.posts];
+          }
         }
       }
+      return followedPosts;
+    }else{
+      //insert not logged in home post algorithm here and return the array of posts
+      console.log('not logged in')
     }
-    return followedPosts;
   }
 
   //Home is base case so on first load and refreshes its not working
@@ -78,6 +89,8 @@ export function ContentScreen(props: contentScreenProps) {
   //lots of issues in terms of refreshes similar to this as well
 
   //also if rapidly switch it fetches the first subgeddit then the second
+  const [firstEffectCompleted, setFirstEffectCompleted] = useState<boolean>(false)
+
   useEffect(() => {
     async function getSubgedditData(): Promise<void> {
       if (props.subgeddit !== 'Home' && props.subgeddit !== 'Popular') {
@@ -92,7 +105,7 @@ export function ContentScreen(props: contentScreenProps) {
           setSubgedditData(data);
         }
       } else if (props.subgeddit === 'Home') {
-        await fetchHomePostIds().then((postIds: DocumentData[]) => {
+        await fetchHomePostIds().then((postIds: DocumentData[] | void) => {
           setSubgedditData({
             name: 'Home',
             description:
@@ -103,7 +116,7 @@ export function ContentScreen(props: contentScreenProps) {
           });
         });
       } else if (props.subgeddit === 'Popular') {
-        await fetchPopularPostIds().then((postIds: DocumentData[]) => {
+        await fetchPopularPostIds().then((postIds: DocumentData[] | void) => {
           setSubgedditData({
             name: 'Popular',
             description:
@@ -115,25 +128,38 @@ export function ContentScreen(props: contentScreenProps) {
         });
       }
     }
-    getSubgedditData();
+    getSubgedditData().then(() => setFirstEffectCompleted(true))
+    .catch((error) => {
+      console.error('Error fetching subgedditData:', error);
+      setFirstEffectCompleted(true);
+    });
   }, [props.subgeddit]);
 
   //the top and new functionality is gonna have to be implemented here
   useEffect(() => {
+    if (!firstEffectCompleted || !subgedditData || !subgedditData.posts) {
+      return;
+    }
+
     setPosts([]);
 
     async function fetchPosts(): Promise<void> {
+      
       const postIds = await subgedditData.posts;
       const postStorage: DocumentData[] = [];
       const db = getFirestore();
       if (postIds) {
+        
         for (const id of postIds) {
-          const postRef = doc(db, 'posts', id);
+          const postRef: DocumentReference = doc(db, 'posts', id);
 
           try {
             const postSnapshot = await getDoc(postRef);
             if (postSnapshot.exists()) {
               postStorage.push(postSnapshot.data());
+              
+            }else{
+              console.log('didnt run 3')
             }
           } catch (error) {
             console.error(`Error fetching document with ID ${id}:`, error);
@@ -145,10 +171,10 @@ export function ContentScreen(props: contentScreenProps) {
     }
 
     fetchPosts();
-  }, [subgedditData]);
+  }, [subgedditData, firstEffectCompleted]);
+
 
   //flicker when repeatedly click a sorter
-
   function sortByPopularity(): void{
     const postsCopy: DocumentData[] = JSON.parse(JSON.stringify(posts))
     
@@ -171,7 +197,7 @@ export function ContentScreen(props: contentScreenProps) {
   }
 
   function sortByNew(): void {
-    const postsCopy: DocumentData[] = JSON.parse(JSON.stringify(posts))
+    const postsCopy: DocumentData[] = structuredClone(posts)
 
     const length: number = postsCopy.length
     
@@ -185,8 +211,9 @@ export function ContentScreen(props: contentScreenProps) {
         }
       }
     }
-  
-    setPosts(postsCopy)
+    if(posts !== postsCopy){
+      setPosts(postsCopy)
+    }
   }
 
   return (
@@ -195,11 +222,11 @@ export function ContentScreen(props: contentScreenProps) {
         <div className="mt-2 flex h-[8vh] w-[40vw] items-center justify-evenly rounded-sm bg-gray-800 ">
           <div onClick={sortByPopularity} className="hover:cursor-pointer primary-foreground flex items-center rounded-sm px-2 py-1 hover:bg-gray-900">
             <ArrowUpSquare />
-            <div  className=" text-xl">Top</div>
+            <div  className="select-none text-xl">Top</div>
           </div>
           <div onClick={sortByNew} className="hover:cursor-pointer primary-foreground flex items-center  rounded-sm px-2 py-1 hover:bg-gray-900">
             <CalendarDays />
-            <div  className=" text-xl">New</div>
+            <div  className="select-none text-xl">New</div>
           </div>
         </div>
         {posts.map((post) => {

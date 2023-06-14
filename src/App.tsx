@@ -17,12 +17,16 @@ import {
 
 import { getAuth, signOut } from 'firebase/auth';
 
+import { v4 as uuidv4 } from 'uuid';
+
+
 import { getUsersSubgeddits } from './modules/getUsersSubgeddits';
 
 function useLogin() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [DisplayLogin, setDisplayLogin] = useState(false);
-  const [user, setUser] = useState('');
+  //when not logged in maybe set localStorage user to something that will let app know its not logged in
+  const [user, setUser] = useState(localStorage.getItem('user'));
 
   const [followedSubgeddits, setFollowedSubgeddits] = useState<
     string[] | undefined
@@ -138,7 +142,7 @@ function App() {
                     <Link
                       onClick={onLinkClick}
                       className="text-center text-lg hover:bg-gray-500 hover:text-gray-900"
-                      key={subgeddit}
+                      key={uuidv4()}
                       to={`/subgeddits/${subgeddit}`}
                     >
                       {subgeddit}
@@ -258,7 +262,7 @@ function App() {
           followedSubgeddits.map((subgeddit) => {
             return (
               <Route
-                key={subgeddit}
+                key={uuidv4()}
                 path={`/subgeddits/${subgeddit}`}
                 element={<ContentScreen user={user} subgeddit={subgeddit} />}
               />

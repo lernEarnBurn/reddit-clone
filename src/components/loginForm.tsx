@@ -21,7 +21,7 @@ import { addDoc, collection, getFirestore } from 'firebase/firestore';
 interface LoginProps {
   setDisplayLogin: React.Dispatch<React.SetStateAction<boolean>>;
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
-  setUser: React.Dispatch<React.SetStateAction<string>>;
+  setUser: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 export function Loginform(props: LoginProps) {
