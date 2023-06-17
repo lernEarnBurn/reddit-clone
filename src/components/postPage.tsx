@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { getFirestore, DocumentData, doc, DocumentReference, getDoc } from "firebase/firestore";
+import { PageInfo } from "./pageInfo";
+
+import { query, collection, getDocs, getFirestore, DocumentData, doc, DocumentReference, getDoc, where } from "firebase/firestore";
 
 export function PostPage() {
     const {id} = useParams()
 
     const [post, setPost] = useState<DocumentData>({})
+    const [subgedditData, setSubgedditData] = useState<DocumentData>({})
 
     useEffect(() => {
         async function getPostDetails(): Promise<void>{
@@ -22,12 +25,32 @@ export function PostPage() {
                 }
             }
         }
-        
+
         getPostDetails()
-        
     }, [id])
 
+
+    useEffect(() => {
+        async function getSubgedditDetails(): Promise<void>{ 
+            const collectionRef = collection(getFirestore(), 'subgeddits');
+            const q = query(collectionRef, where('name', '==', post.subgeddit));
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) {
+              const documentSnapshot = querySnapshot.docs[0];
+              const data = documentSnapshot.data();
+              setSubgedditData(data)
+            }
+        }
+
+        getSubgedditDetails()
+    }, [post])
+
     return (
-        <div className="text-green-500">{JSON.stringify(post)}</div>
-    )
+            <div className="flex">
+                <div>
+                    
+                </div>
+                <PageInfo subgeddit={post.subgeddit} subgedditObj={subgedditData}/>
+            </div>
+        )
 }
