@@ -34,6 +34,7 @@ export function Loginform(props: LoginProps) {
 
   async function logInGoogle() {
     /*may just keep as show and not waste one of my google apps on it */
+    /*Not implemented */
     const provider = new GoogleAuthProvider();
     await signInWithPopup(getAuth(), provider);
   }
@@ -67,7 +68,7 @@ export function Loginform(props: LoginProps) {
           password
         );
 
-        storeUser(email);
+        await storeUser(email);
 
         const user = userCredential.user;
         console.log(user);
