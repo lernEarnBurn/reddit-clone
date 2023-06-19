@@ -105,8 +105,8 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="h-10vh z-6 flex w-full items-center bg-gray-800 bg-opacity-95">
-        <div className="logo mr-6"></div>
+      <nav className="h-10vh z-6 flex w-full items-center bg-gray-800 bg-opacity-95">
+        <Link to="/"><div className="logo mr-6"></div></Link>
         <div className="absolute left-52 top-3">
           <div
             onClick={toggleDisplayOptions}
@@ -242,7 +242,7 @@ function App() {
             </div>
           </div>
         )}
-      </div>
+      </nav>
       <Routes>
         <Route
           path="/"
