@@ -86,6 +86,8 @@ export function Loginform(props: LoginProps) {
       }
       setLoading(false)
       window.location.href = '/popular'
+      localStorage.setItem('last-subgeddit', 'Popular')
+
     }
   }
 
@@ -118,6 +120,7 @@ export function Loginform(props: LoginProps) {
       }
       setLoading(false)
       window.location.href = '/'
+      localStorage.setItem('last-subgeddit', 'Home')
     }
   }
 

@@ -94,13 +94,11 @@ function App() {
     }
   }
 
-  /*If refresh than it defaults to this need to change functionality so this is always dependent on current subgeddit not this cheap state save */
-  const [lastClicked, setLastClicked] = useState<string>('Home');
-
+  
   function onLinkClick(event: React.MouseEvent<HTMLAnchorElement>) {
     const target = event.target as HTMLAnchorElement;
     setDisplayOptions(false);
-    setLastClicked(target.textContent || '');
+    localStorage.setItem('last-subgeddit', target.textContent || '')
   }
 
   return (
@@ -111,8 +109,8 @@ function App() {
           <div
             onClick={toggleDisplayOptions}
             className="primary-foreground w-[14vw] rounded-sm bg-gray-800 p-1 text-center text-lg hover:border hover:border-white"
-          >
-            {lastClicked}
+          >{/*use localStorage to get current page */}
+            {localStorage.getItem('last-subgeddit') ? localStorage.getItem('last-subgeddit') : "Home" }
           </div>
           {displayOptions && (
             <div className="primary-foreground mt-2 flex flex-col rounded-sm bg-gray-800">
@@ -227,8 +225,8 @@ function App() {
             </Avatar>
           </>
         ) : (
-          <div className="primary-foreground absolute right-4  flex items-start justify-center rounded-md bg-gray-900">
-            <Avatar className="h-[6vh] w-[4.5vw] bg-contain ">
+          <div className="primary-foreground absolute right-4 max-w-[19vw] overflow-hidden flex items-start justify-center rounded-md bg-gray-900">
+            <Avatar className="h-[6vh] min-w-[4.5vw] w-[4.5vw] bg-contain ">
               <AvatarImage src="/images/stockAvatar.png" />
             </Avatar>
             <div className="flex-col">
