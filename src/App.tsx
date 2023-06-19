@@ -113,24 +113,24 @@ function App() {
             {localStorage.getItem('last-subgeddit') ? localStorage.getItem('last-subgeddit') : "Home" }
           </div>
           {displayOptions && (
-            <div className="primary-foreground mt-2 flex flex-col rounded-sm bg-gray-800">
+            <div className="z-10 primary-foreground mt-2 flex flex-col rounded-sm bg-gray-800 ">
               <Link
                 onClick={onLinkClick}
-                className="text-center text-lg hover:bg-gray-500 hover:text-gray-900"
+                className="z-10 text-center text-lg hover:bg-gray-500 hover:text-gray-900"
                 to="/"
               >
                 Home
               </Link>
               <Link
                 onClick={onLinkClick}
-                className="text-center text-lg hover:bg-gray-500 hover:text-gray-900"
+                className="z-10 text-center text-lg hover:bg-gray-500 hover:text-gray-900"
                 to="/popular"
               >
                 Popular
               </Link>
               <Link
                 onClick={onLinkClick}
-                className="text-center text-lg hover:bg-gray-500 hover:text-gray-900"
+                className="z-10 text-center text-lg hover:bg-gray-500 hover:text-gray-900"
                 to="/create-post"
               >
                 Create Post
@@ -140,7 +140,7 @@ function App() {
                   return (
                     <Link
                       onClick={onLinkClick}
-                      className="text-center text-lg hover:bg-gray-500 hover:text-gray-900"
+                      className="z-10 text-center text-lg hover:bg-gray-500 hover:text-gray-900"
                       key={uuidv4()}
                       to={`/subgeddits/${subgeddit}`}
                     >

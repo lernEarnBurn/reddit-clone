@@ -21,6 +21,9 @@ import { useLocation, useParams } from 'react-router-dom';
 import { ArrowUpSquare } from 'lucide-react';
 import { CalendarDays } from 'lucide-react';
 
+import { PostSkeleton } from './ui/PostSkeleton';
+import { PageInfoSkeleton } from './ui/PageInfoSkeleton';
+
 import { getUsersSubgeddits } from '../modules/getUsersSubgeddits';
 import { getNotUsersSubgeddits } from '../modules/getNotUsersSubgeddits';
 
@@ -105,9 +108,12 @@ export function ContentScreen(props: contentScreenProps) {
   //also if rapidly switch it fetches the first subgeddit then the second
   const [firstEffectCompleted, setFirstEffectCompleted] = useState<boolean>(false)
   
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     async function getSubgedditData(): Promise<void> {
+      setLoading(true)
+
       if (subgeddit !== 'Home' && subgeddit !== 'Popular') {
         const db = getFirestore();
         const collectionRef = collection(db, 'subgeddits');
@@ -182,6 +188,7 @@ export function ContentScreen(props: contentScreenProps) {
         }
     
         setPosts(postStorage);
+        setLoading(false)
       }
     }
 
@@ -244,8 +251,7 @@ export function ContentScreen(props: contentScreenProps) {
             <div  className="select-none text-xl">New</div>
           </div>
         </div>
-        {posts.map((post) => {
-          //this shit is running everytime i hit select
+        {!loading ? posts.map((post) => {
           return (
             <Post
               content={post.content}
@@ -258,9 +264,22 @@ export function ContentScreen(props: contentScreenProps) {
               id={post.id}
             />
           );
-        })}
+        }) : (
+          <>
+            <PostSkeleton/>
+            <PostSkeleton/>
+            <PostSkeleton/>
+
+          </>
+          
+        )}
       </div>
-      <PageInfo subgeddit={subgeddit} subgedditObj={subgedditData} />
+      {!loading ? (
+        <PageInfo subgeddit={subgeddit} subgedditObj={subgedditData} />
+
+      ) : (
+        <PageInfoSkeleton subgeddit={subgeddit}/>
+      )}
     </div>
   );
 }
