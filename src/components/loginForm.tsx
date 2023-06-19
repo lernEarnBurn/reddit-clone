@@ -3,6 +3,8 @@ import { Button } from './ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { Input } from './ui/input';
 
+import { Loader2 } from 'lucide-react';
+
 import { useState, useRef } from 'react';
 import type { RefObject } from 'react';
 
@@ -49,6 +51,8 @@ export function Loginform(props: LoginProps) {
     }
   }
 
+  const [loading, setLoading] = useState(false)
+
   async function signUp() {
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
@@ -56,6 +60,7 @@ export function Loginform(props: LoginProps) {
 
     if (email && password) {
       try {
+        setLoading(true)
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           email,
@@ -78,6 +83,7 @@ export function Loginform(props: LoginProps) {
           console.log(errorMessage);
         }
       }
+      setLoading(false)
     }
   }
 
@@ -88,6 +94,7 @@ export function Loginform(props: LoginProps) {
 
     if (email && password) {
       try {
+        setLoading(true)
         const userCredential = await signInWithEmailAndPassword(
           auth,
           email,
@@ -107,12 +114,13 @@ export function Loginform(props: LoginProps) {
           console.log(errorMessage);
         }
       }
+      setLoading(false)
     }
   }
 
   return (
-    <div className="fixed left-0 top-0 z-10 flex h-full w-full items-center justify-center bg-gray-500 bg-opacity-50">
-      <div className="h-[65vh] w-[25vw] flex-col items-center rounded-lg bg-white p-6">
+    <div className="fixed left-0 top-0 z-10 flex h-full w-full items-center justify-center text-gray-300 bg-gray-500 bg-opacity-50">
+      <div className="h-[58vh] w-[25vw] flex-col items-center rounded-lg bg-gray-800 p-6">
         <div className="flex justify-between">
           {onSignUp ? (
             <h2 className="mb-4 text-3xl font-medium">Sign Up</h2>
@@ -120,7 +128,7 @@ export function Loginform(props: LoginProps) {
             <h2 className="mb-4 text-3xl font-medium">Login</h2>
           )}
           <button
-            className="mb-12 mr-2 p-1"
+            className="mb-12 mr-2 mt-1 px-2 py-1 rounded-sm hover:bg-red-700 text-center"
             onClick={() => {
               props.setDisplayLogin(false);
             }}
@@ -130,7 +138,7 @@ export function Loginform(props: LoginProps) {
         </div>
         <button
           onClick={logInGoogle}
-          className="mb-12 flex w-full items-center justify-center gap-2 rounded-sm hover:bg-gray-100"
+          className="mb-8 flex w-full items-center justify-center gap-2 rounded-sm hover:bg-gray-700"
         >
           <Avatar className="mb-1 ml-8 h-[2vh] w-[1.3vw] bg-contain">
             <AvatarImage src="/images/google.webp" />
@@ -141,15 +149,22 @@ export function Loginform(props: LoginProps) {
         <Input
           ref={emailRef}
           type="email"
-          className=" mb-4"
+          className="border-black focus:border-gray-300 mb-4"
           placeholder="Email"
         />
-        <Input ref={passwordRef} type="password" placeholder="Password" />
+        <Input className='border-black focus:border-gray-300' ref={passwordRef} type="password" placeholder="Password" />
         {onSignUp ? (
           <>
-            <Button onClick={signUp} size={'lg'} className="mt-4 w-full">
-              Submit
-            </Button>
+            {!loading ? (
+              <Button onClick={signUp} size={'lg'} className="mt-4 w-full">
+                Submit
+              </Button>
+            ) : (
+              <Button disabled size={'lg'} className="mt-4 w-full">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Please Wait
+              </Button>
+            )}
             <div className="mt-6 flex items-center gap-2">
               <p>Already Have An Account?</p>
               <a
@@ -164,9 +179,16 @@ export function Loginform(props: LoginProps) {
           </>
         ) : (
           <>
-            <Button onClick={logIn} size={'lg'} className="mt-4 w-full">
-              Submit
-            </Button>
+            {!loading ? (
+              <Button onClick={logIn} size={'lg'} className="mt-4 w-full">
+                Submit
+              </Button>
+            ) : (
+              <Button disabled size={'lg'} className="mt-4 w-full">
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Please Wait
+              </Button>
+            )}
             <div className="mt-6 flex items-center gap-2">
               <p>New to Geddit?</p>
               <a
