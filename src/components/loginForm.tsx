@@ -85,6 +85,7 @@ export function Loginform(props: LoginProps) {
         }
       }
       setLoading(false)
+      window.location.href = '/popular'
     }
   }
 
@@ -116,6 +117,7 @@ export function Loginform(props: LoginProps) {
         }
       }
       setLoading(false)
+      window.location.href = '/'
     }
   }
 
