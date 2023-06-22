@@ -149,7 +149,7 @@ export function PostPage() {
   
 
     return (
-            1 ===3  ? (
+            !loading  ? (
               <div className="flex items-start justify-center">
                   <div className=" mt-2 flex min-w-[50vw] w-[50vw] rounded-sm bg-gray-800 px-3 py-2 text-gray-100">
                       <div className="mr-4 mt-1">
