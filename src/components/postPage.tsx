@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 
 import { PageInfo } from "./pageInfo";
 
-import { query, collection, getDocs, updateDoc, getFirestore, DocumentData, doc, DocumentReference, getDoc, where, increment } from "firebase/firestore";
+import { query, collection, getDocs, updateDoc, getFirestore, DocumentData, doc, DocumentReference, getDoc, where, increment, Firestore, arrayUnion, addDoc } from "firebase/firestore";
 
 import { getDocumentIdFromField } from "../modules/getIdFromField";
+
+import { Loader2 } from "lucide-react";
 
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
@@ -145,6 +147,47 @@ export function PostPage() {
       setAlreadyDecremented(true);
     }
   }
+  
+  const commentInputRef = useRef<HTMLTextAreaElement>(null)
+
+  async function addCommentToPost(database: Firestore, commentId: string) {
+    if(id){
+      const postRef = doc(database, 'posts', id);
+      await updateDoc(postRef, {
+        comments: arrayUnion(commentId),
+      });
+    }
+  }
+
+  const [commentBtnLoading,setCommentBtnLoading] = useState(false)
+
+  
+  async function createComment(): Promise<void>{
+
+    if(commentInputRef.current?.value !== ""){
+      setCommentBtnLoading(true)
+      console.log(commentInputRef.current?.value)
+      try {
+        const commentRef = await addDoc(collection(getFirestore(), 'comments'), {
+          postedBy: localStorage.getItem('user'),
+          content: commentInputRef.current?.value,
+          comments: [],
+          upvotes: 0
+        });
+
+        await addCommentToPost(getFirestore(), commentRef.id)
+      }catch(err){
+        console.log(err)
+      }
+        
+      setCommentBtnLoading(false)
+      if(commentInputRef.current){
+        commentInputRef.current.value = ""
+      }
+    }
+
+    
+  }
 
   
 
@@ -195,10 +238,21 @@ export function PostPage() {
                             ></div>
                           )}
                           <p className="ml-1 text-xs primary-foreground mt-6">Comment As <span className="cursor-pointer hover:underline text-gray-300">{post.postedBy}</span></p>
-                          <Textarea className="mt-1 border-black text-gray-200 focus:border-gray-200" placeholder="What Are Your Thoughts?"></Textarea>
-                          <Button
+                          <Textarea ref={commentInputRef} className="mt-1 border-black text-gray-200 focus:border-gray-200" placeholder="What Are Your Thoughts?"></Textarea>
+                          {!commentBtnLoading ? (
+                            <Button
+                            onClick={createComment}
+                            className="mt-2 h-[6vh] w-full text-xl"
+                            >Comment</Button>
+                          ) : (
+                            <Button disabled
                               className="mt-2 h-[6vh] w-full text-xl"
-                          >Comment</Button>
+                            >
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Please Wait
+                            </Button>
+                          )}  
+                            
                       </div>         
                   </div>
                   <PageInfo subgeddit={post.subgeddit} subgedditObj={subgedditData}/>        
