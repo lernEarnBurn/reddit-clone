@@ -40,11 +40,11 @@ export function PageInfo(props: PageInfoProps) {
   const [isRealSubgeddit, setIsRealSubgeddit] = useState<boolean | null>(null);
 
   return (
-    <div className="ml-2 mt-2 h-auto max-w-[20vw] min-w-[20vw] flex-col justify-end rounded-sm bg-gray-800 pb-4">
+    <div className="ml-2 mt-2 h-auto min-w-[20vw] max-w-[20vw] flex-col justify-end rounded-sm bg-gray-800 pb-4">
       <div className="primary-foreground mt-6 flex justify-center text-2xl font-bold">
         <p>g/{props.subgeddit}</p>
       </div>
-      
+
       <div className="primary-foreground px-6 py-4">
         {props.subgedditObj.description}
       </div>

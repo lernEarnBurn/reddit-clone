@@ -25,12 +25,12 @@ export function SubgedditForm(props: SubgedditFormProps) {
   const nameRef = useRef<HTMLInputElement>(null);
   const descriptRef = useRef<HTMLTextAreaElement>(null);
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   async function createCommunity() {
     try {
       //do a loading circle on button
-      setLoading(true)
+      setLoading(true);
       await addDoc(collection(getFirestore(), 'subgeddits'), {
         name: nameRef.current?.value,
         description: descriptRef.current?.value,
@@ -56,16 +56,15 @@ export function SubgedditForm(props: SubgedditFormProps) {
     } catch (error) {
       console.error('Error writing new message to Firebase Database', error);
     }
-    setLoading(false)
+    setLoading(false);
     props.setCreateSubgeddit(false);
-    
   }
 
   /*Needs a loading animation when creating a subgeddit */
 
   return (
     <>
-      <div className="fixed left-0 top-0 z-10 flex h-full w-full items-center justify-center text-gray-300 bg-gray-500 bg-opacity-50">
+      <div className="fixed left-0 top-0 z-10 flex h-full w-full items-center justify-center bg-gray-500 bg-opacity-50 text-gray-300">
         <div className="h-[58vh] w-[25vw] items-center rounded-lg bg-gray-800 p-6">
           <div className="flex items-center justify-center gap-10">
             <h1 className="text-2xl">Create A Community</h1>
@@ -99,7 +98,6 @@ export function SubgedditForm(props: SubgedditFormProps) {
                 Please Wait
               </Button>
             )}
-            
           </div>
         </div>
       </div>

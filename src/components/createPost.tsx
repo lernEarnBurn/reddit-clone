@@ -116,12 +116,12 @@ export function CreatePost(props: CreatePostProps) {
     });
   }
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   async function createPost(text: boolean) {
     if (await inCollection('subgeddits', subgedditInputRef.current?.value)) {
       try {
-        setLoading(true)
+        setLoading(true);
         const postRef = await addDoc(collection(getFirestore(), 'posts'), {
           comments: [],
           content: '',
@@ -168,7 +168,7 @@ export function CreatePost(props: CreatePostProps) {
         alert(error);
         console.error('Error writing new message to Firebase Database', error);
       }
-      setLoading(false)
+      setLoading(false);
       location.reload();
     } else {
       if (subgedditInputRef.current) {
@@ -221,21 +221,19 @@ export function CreatePost(props: CreatePostProps) {
               ref={contentRef}
             />
             {props.loggedIn ? (
-              (!loading ? (
+              !loading ? (
                 <Button
                   className="ml-6 mt-4 h-[6vh] w-[42vw] text-xl"
-                  onClick={() => createPost(true)}>
+                  onClick={() => createPost(true)}
+                >
                   Post
                 </Button>
-                ) : (
-                <Button disabled
-                className="ml-6 mt-4 h-[6vh] w-[42vw] text-xl"
-                >
+              ) : (
+                <Button disabled className="ml-6 mt-4 h-[6vh] w-[42vw] text-xl">
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Please Wait
                 </Button>
-              ))
-             
+              )
             ) : (
               <Button
                 className="ml-6 mt-4 h-[6vh] w-[42vw] text-xl"
@@ -278,20 +276,19 @@ export function CreatePost(props: CreatePostProps) {
               accept="image/*"
             />
             {props.loggedIn ? (
-              (!loading ? (
+              !loading ? (
                 <Button
                   className="ml-6 mt-4 h-[6vh] w-[42vw] text-xl"
-                  onClick={() => createPost(false)}>
+                  onClick={() => createPost(false)}
+                >
                   Post
                 </Button>
-                ) : (
-                <Button disabled
-                className="ml-6 mt-4 h-[6vh] w-[42vw] text-xl"
-                >
+              ) : (
+                <Button disabled className="ml-6 mt-4 h-[6vh] w-[42vw] text-xl">
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Please Wait
                 </Button>
-              ))
+              )
             ) : (
               <Button
                 className="ml-6 mt-4 h-[6vh] w-[42vw] text-xl"

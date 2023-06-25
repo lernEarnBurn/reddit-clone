@@ -20,7 +20,6 @@ import { getAuth, signOut } from 'firebase/auth';
 
 import { v4 as uuidv4 } from 'uuid';
 
-
 import { getUsersSubgeddits } from './modules/getUsersSubgeddits';
 
 function useLogin() {
@@ -94,26 +93,30 @@ function App() {
     }
   }
 
-  
   function onLinkClick(event: React.MouseEvent<HTMLAnchorElement>) {
     const target = event.target as HTMLAnchorElement;
     setDisplayOptions(false);
-    localStorage.setItem('last-subgeddit', target.textContent || '')
+    localStorage.setItem('last-subgeddit', target.textContent || '');
   }
 
   return (
     <BrowserRouter>
       <nav className="h-10vh z-6 flex w-full items-center bg-gray-800 bg-opacity-95">
-        <Link to="/"><div className="logo mr-6"></div></Link>
+        <Link to="/">
+          <div className="logo mr-6"></div>
+        </Link>
         <div className="absolute left-52 top-3">
           <div
             onClick={toggleDisplayOptions}
             className="primary-foreground w-[14vw] rounded-sm bg-gray-800 p-1 text-center text-lg hover:border hover:border-white"
-          >{/*use localStorage to get current page */}
-            {localStorage.getItem('last-subgeddit') ? localStorage.getItem('last-subgeddit') : "Home" }
+          >
+            {/*use localStorage to get current page */}
+            {localStorage.getItem('last-subgeddit')
+              ? localStorage.getItem('last-subgeddit')
+              : 'Home'}
           </div>
           {displayOptions && (
-            <div className="z-10 primary-foreground mt-2 flex flex-col rounded-sm bg-gray-800 ">
+            <div className="primary-foreground z-10 mt-2 flex flex-col rounded-sm bg-gray-800 ">
               <Link
                 onClick={onLinkClick}
                 className="z-10 text-center text-lg hover:bg-gray-500 hover:text-gray-900"
@@ -225,8 +228,8 @@ function App() {
             </Avatar>
           </>
         ) : (
-          <div className="primary-foreground absolute right-4 max-w-[19vw] overflow-hidden flex items-start justify-center rounded-md bg-gray-900">
-            <Avatar className="h-[6vh] min-w-[4.5vw] w-[4.5vw] bg-contain ">
+          <div className="primary-foreground absolute right-4 flex max-w-[19vw] items-start justify-center overflow-hidden rounded-md bg-gray-900">
+            <Avatar className="h-[6vh] w-[4.5vw] min-w-[4.5vw] bg-contain ">
               <AvatarImage src="/images/stockAvatar.png" />
             </Avatar>
             <div className="flex-col">
@@ -242,27 +245,18 @@ function App() {
         )}
       </nav>
       <Routes>
-        <Route
-          path="/"
-          element={<ContentScreen user={user}/>}
-        />
-        <Route
-          path="/popular"
-          element={<ContentScreen user={user}/>}
-        />
+        <Route path="/" element={<ContentScreen user={user} />} />
+        <Route path="/popular" element={<ContentScreen user={user} />} />
         <Route
           path="/create-post"
           element={
             <CreatePost loggedIn={loggedIn} setDisplayLogin={setDisplayLogin} />
           }
         />
+        <Route path="/subgeddits/:subgeddit/posts/:id" element={<PostPage />} />
         <Route
-          path="/subgeddits/:subgeddit/posts/:id"
-          element={<PostPage />}
-        />
-        <Route 
           path="/subgeddits/:subgeddit"
-          element={<ContentScreen user={user}/>}
+          element={<ContentScreen user={user} />}
         />
       </Routes>
     </BrowserRouter>

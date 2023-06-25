@@ -52,7 +52,7 @@ export function Loginform(props: LoginProps) {
     }
   }
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   async function signUp() {
     const email = emailRef.current?.value;
@@ -61,7 +61,7 @@ export function Loginform(props: LoginProps) {
 
     if (email && password) {
       try {
-        setLoading(true)
+        setLoading(true);
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           email,
@@ -84,10 +84,9 @@ export function Loginform(props: LoginProps) {
           console.log(errorMessage);
         }
       }
-      setLoading(false)
-      window.location.href = '/popular'
-      localStorage.setItem('last-subgeddit', 'Popular')
-
+      setLoading(false);
+      window.location.href = '/popular';
+      localStorage.setItem('last-subgeddit', 'Popular');
     }
   }
 
@@ -98,7 +97,7 @@ export function Loginform(props: LoginProps) {
 
     if (email && password) {
       try {
-        setLoading(true)
+        setLoading(true);
         const userCredential = await signInWithEmailAndPassword(
           auth,
           email,
@@ -118,14 +117,14 @@ export function Loginform(props: LoginProps) {
           console.log(errorMessage);
         }
       }
-      setLoading(false)
-      window.location.href = '/'
-      localStorage.setItem('last-subgeddit', 'Home')
+      setLoading(false);
+      window.location.href = '/';
+      localStorage.setItem('last-subgeddit', 'Home');
     }
   }
 
   return (
-    <div className="fixed left-0 top-0 z-10 flex h-full w-full items-center justify-center text-gray-300 bg-gray-500 bg-opacity-50">
+    <div className="fixed left-0 top-0 z-10 flex h-full w-full items-center justify-center bg-gray-500 bg-opacity-50 text-gray-300">
       <div className="h-[58vh] w-[25vw] flex-col items-center rounded-lg bg-gray-800 p-6">
         <div className="flex justify-between">
           {onSignUp ? (
@@ -134,7 +133,7 @@ export function Loginform(props: LoginProps) {
             <h2 className="mb-4 text-3xl font-medium">Login</h2>
           )}
           <button
-            className="mb-12 mr-2 mt-1 px-2 py-1 rounded-sm hover:bg-red-700 text-center"
+            className="mb-12 mr-2 mt-1 rounded-sm px-2 py-1 text-center hover:bg-red-700"
             onClick={() => {
               props.setDisplayLogin(false);
             }}
@@ -155,10 +154,15 @@ export function Loginform(props: LoginProps) {
         <Input
           ref={emailRef}
           type="email"
-          className="border-black focus:border-gray-300 mb-4"
+          className="mb-4 border-black focus:border-gray-300"
           placeholder="Email"
         />
-        <Input className='border-black focus:border-gray-300' ref={passwordRef} type="password" placeholder="Password" />
+        <Input
+          className="border-black focus:border-gray-300"
+          ref={passwordRef}
+          type="password"
+          placeholder="Password"
+        />
         {onSignUp ? (
           <>
             {!loading ? (

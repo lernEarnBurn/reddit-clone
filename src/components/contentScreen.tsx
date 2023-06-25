@@ -33,7 +33,7 @@ interface contentScreenProps {
 
 //add caching to reduce speeds when refreshing pages
 export function ContentScreen(props: contentScreenProps) {
-  const route = useLocation()
+  const route = useLocation();
   const { subgeddit: routeSubgeddit } = useParams();
   const [subgeddit, setSubgeddit] = useState('');
 
@@ -43,7 +43,7 @@ export function ContentScreen(props: contentScreenProps) {
     } else if (route.pathname === '/popular') {
       setSubgeddit('Popular');
     } else {
-      if(routeSubgeddit){
+      if (routeSubgeddit) {
         setSubgeddit(routeSubgeddit);
       }
     }
@@ -54,7 +54,7 @@ export function ContentScreen(props: contentScreenProps) {
   const [posts, setPosts] = useState<DocumentData[]>([]);
 
   async function fetchPopularPostIds(): Promise<DocumentData[] | void> {
-    if(props.user){
+    if (props.user) {
       const notFollowedSubgedditsIds = await getNotUsersSubgeddits(props.user);
 
       let notFollowedPosts: DocumentData[] = [];
@@ -72,15 +72,15 @@ export function ContentScreen(props: contentScreenProps) {
         }
       }
       return notFollowedPosts;
-    }else{
+    } else {
       //insert not logged in home post algorithm here and return the array of posts
-      console.log('not logged in')
+      console.log('not logged in');
     }
   }
 
   //handle case if not logged in (few places around application need this as well)
   async function fetchHomePostIds(): Promise<DocumentData[] | void> {
-    if(props.user){
+    if (props.user) {
       const followedSubgedditsIds = await getUsersSubgeddits(props.user);
 
       let followedPosts: DocumentData[] = [];
@@ -98,21 +98,21 @@ export function ContentScreen(props: contentScreenProps) {
         }
       }
       return followedPosts;
-    }else{
+    } else {
       //insert not logged in home post algorithm here and return the array of posts
-      console.log('not logged in')
+      console.log('not logged in');
     }
   }
 
-
   //also if rapidly switch it fetches the first subgeddit then the second
-  const [firstEffectCompleted, setFirstEffectCompleted] = useState<boolean>(false)
-  
-  const [loading, setLoading] = useState(false)
+  const [firstEffectCompleted, setFirstEffectCompleted] =
+    useState<boolean>(false);
+
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     async function getSubgedditData(): Promise<void> {
-      setLoading(true)
+      setLoading(true);
 
       if (subgeddit !== 'Home' && subgeddit !== 'Popular') {
         const db = getFirestore();
@@ -125,7 +125,7 @@ export function ContentScreen(props: contentScreenProps) {
           const data = documentSnapshot.data();
           setSubgedditData(data);
         }
-      } else if (subgeddit === "Home") {
+      } else if (subgeddit === 'Home') {
         await fetchHomePostIds().then((postIds: DocumentData[] | void) => {
           setSubgedditData({
             name: 'Home',
@@ -136,7 +136,7 @@ export function ContentScreen(props: contentScreenProps) {
             leader: '',
           });
         });
-      } else if (subgeddit === "Popular") {
+      } else if (subgeddit === 'Popular') {
         await fetchPopularPostIds().then((postIds: DocumentData[] | void) => {
           setSubgedditData({
             name: 'Popular',
@@ -149,13 +149,13 @@ export function ContentScreen(props: contentScreenProps) {
         });
       }
     }
-    getSubgedditData().then(() => setFirstEffectCompleted(true))
-    .catch((error) => {
-      console.error('Error fetching subgedditData:', error);
-      setFirstEffectCompleted(true);
-    });
+    getSubgedditData()
+      .then(() => setFirstEffectCompleted(true))
+      .catch((error) => {
+        console.error('Error fetching subgedditData:', error);
+        setFirstEffectCompleted(true);
+      });
   }, [subgeddit]);
-
 
   useEffect(() => {
     if (!firstEffectCompleted || !subgedditData || !subgedditData.posts) {
@@ -165,12 +165,10 @@ export function ContentScreen(props: contentScreenProps) {
     setPosts([]);
 
     async function fetchPosts(): Promise<void> {
-      
       const postIds = await subgedditData.posts;
       const postStorage: DocumentData[] = [];
       const db = getFirestore();
       if (postIds) {
-        
         for (const id of postIds) {
           const postRef: DocumentReference = doc(db, 'posts', id);
 
@@ -180,49 +178,44 @@ export function ContentScreen(props: contentScreenProps) {
               const postData = postSnapshot.data();
               const postWithId = { id: postSnapshot.id, ...postData };
               postStorage.push(postWithId);
-              
             }
           } catch (error) {
             console.error(`Error fetching document with ID ${id}:`, error);
           }
         }
-    
+
         setPosts(postStorage);
-        setLoading(false)
+        setLoading(false);
       }
     }
 
     fetchPosts();
   }, [subgedditData, firstEffectCompleted]);
 
-
   //flicker when repeatedly click a sorter
-  function sortByPopularity(): void{
-    const postsCopy: DocumentData[] = JSON.parse(JSON.stringify(posts))
-    
+  function sortByPopularity(): void {
+    const postsCopy: DocumentData[] = JSON.parse(JSON.stringify(posts));
 
-    const length: number = postsCopy.length
-    
+    const length: number = postsCopy.length;
+
     for (let i = 0; i < length - 1; i++) {
       for (let j = 0; j < length - i - 1; j++) {
-
         if (postsCopy[j + 1].upvotes > postsCopy[j].upvotes) {
-
           const temp: DocumentData = postsCopy[j + 1];
           postsCopy[j + 1] = postsCopy[j];
           postsCopy[j] = temp;
         }
       }
     }
-  
-    setPosts(postsCopy)
+
+    setPosts(postsCopy);
   }
 
   function sortByNew(): void {
-    const postsCopy: DocumentData[] = structuredClone(posts)
+    const postsCopy: DocumentData[] = structuredClone(posts);
 
-    const length: number = postsCopy.length
-    
+    const length: number = postsCopy.length;
+
     for (let i = 0; i < length - 1; i++) {
       for (let j = 0; j < length - i - 1; j++) {
         // Compare adjacent elements
@@ -233,8 +226,8 @@ export function ContentScreen(props: contentScreenProps) {
         }
       }
     }
-    if(posts !== postsCopy){
-      setPosts(postsCopy)
+    if (posts !== postsCopy) {
+      setPosts(postsCopy);
     }
   }
 
@@ -242,43 +235,48 @@ export function ContentScreen(props: contentScreenProps) {
     <div className="flex items-start justify-center">
       <div className="flex-col">
         <div className="mt-2 flex h-[8vh] w-[40vw] items-center justify-evenly rounded-sm bg-gray-800 ">
-          <div onClick={sortByPopularity} className="hover:cursor-pointer primary-foreground flex items-center rounded-sm px-2 py-1 hover:bg-gray-900">
+          <div
+            onClick={sortByPopularity}
+            className="primary-foreground flex items-center rounded-sm px-2 py-1 hover:cursor-pointer hover:bg-gray-900"
+          >
             <ArrowUpSquare />
-            <div  className="select-none text-xl">Top</div>
+            <div className="select-none text-xl">Top</div>
           </div>
-          <div onClick={sortByNew} className="hover:cursor-pointer primary-foreground flex items-center  rounded-sm px-2 py-1 hover:bg-gray-900">
+          <div
+            onClick={sortByNew}
+            className="primary-foreground flex items-center rounded-sm  px-2 py-1 hover:cursor-pointer hover:bg-gray-900"
+          >
             <CalendarDays />
-            <div  className="select-none text-xl">New</div>
+            <div className="select-none text-xl">New</div>
           </div>
         </div>
-        {!loading ? posts.map((post) => {
-          return (
-            <Post
-              content={post.content}
-              title={post.title}
-              user={post.postedBy}
-              subgeddit={post.subgeddit}
-              timePosted={post.timePosted}
-              upvotes={post.upvotes}
-              key={uuidv4()}
-              id={post.id}
-            />
-          );
-        }) : (
+        {!loading ? (
+          posts.map((post) => {
+            return (
+              <Post
+                content={post.content}
+                title={post.title}
+                user={post.postedBy}
+                subgeddit={post.subgeddit}
+                timePosted={post.timePosted}
+                upvotes={post.upvotes}
+                key={uuidv4()}
+                id={post.id}
+              />
+            );
+          })
+        ) : (
           <>
-            <PostSkeleton/>
-            <PostSkeleton/>
-            <PostSkeleton/>
-
+            <PostSkeleton />
+            <PostSkeleton />
+            <PostSkeleton />
           </>
-          
         )}
       </div>
       {!loading ? (
         <PageInfo subgeddit={subgeddit} subgedditObj={subgedditData} />
-
       ) : (
-        <PageInfoSkeleton subgeddit={subgeddit}/>
+        <PageInfoSkeleton subgeddit={subgeddit} />
       )}
     </div>
   );

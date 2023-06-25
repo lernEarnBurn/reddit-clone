@@ -10,5 +10,5 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   </React.StrictMode>
 );
 
-const firbaseAppConfig = getFirebaseConfig();
-initializeApp(firbaseAppConfig);
+const firebaseAppConfig = getFirebaseConfig();
+initializeApp(firebaseAppConfig);

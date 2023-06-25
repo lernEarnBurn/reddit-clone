@@ -107,7 +107,10 @@ export function Post(props: PostProps) {
 
   return (
     <>
-      <Link to={`/subgeddits/${props.subgeddit}/posts/${props.id}`} className="hover:border-1 mt-2 flex w-[40vw] rounded-sm bg-gray-800 px-3  py-2 text-gray-100 hover:border hover:border-gray-50">
+      <Link
+        to={`/subgeddits/${props.subgeddit}/posts/${props.id}`}
+        className="hover:border-1 mt-2 flex w-[40vw] rounded-sm bg-gray-800 px-3  py-2 text-gray-100 hover:border hover:border-gray-50"
+      >
         <div className="mr-4 mt-1">
           <button
             className={
@@ -117,7 +120,9 @@ export function Post(props: PostProps) {
             }
             onClick={incrementUpvotes}
           ></button>
-          <div className="-mt-[.65vh]  text-center text-sm">{upvotesAmount}</div>
+          <div className="-mt-[.65vh]  text-center text-sm">
+            {upvotesAmount}
+          </div>
           <button
             className={
               alreadyDecremented
@@ -127,7 +132,6 @@ export function Post(props: PostProps) {
             onClick={decrementUpvotes}
           ></button>
         </div>
-
 
         <div className="flex-col justify-center gap-6">
           <div className="flex items-center gap-2">
