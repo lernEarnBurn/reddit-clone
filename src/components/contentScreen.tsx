@@ -192,42 +192,54 @@ export function ContentScreen(props: contentScreenProps) {
     fetchPosts();
   }, [subgedditData, firstEffectCompleted]);
 
-  //flicker when repeatedly click a sorter
+  
+  const [alreadySortedPopular, setAlreadySortedPopular] = useState(false)
+
   function sortByPopularity(): void {
-    const postsCopy: DocumentData[] = JSON.parse(JSON.stringify(posts));
+    if(!alreadySortedPopular){
+      const postsCopy: DocumentData[] = JSON.parse(JSON.stringify(posts));
 
-    const length: number = postsCopy.length;
+      const length: number = postsCopy.length;
 
-    for (let i = 0; i < length - 1; i++) {
-      for (let j = 0; j < length - i - 1; j++) {
-        if (postsCopy[j + 1].upvotes > postsCopy[j].upvotes) {
-          const temp: DocumentData = postsCopy[j + 1];
-          postsCopy[j + 1] = postsCopy[j];
-          postsCopy[j] = temp;
+      for (let i = 0; i < length - 1; i++) {
+        for (let j = 0; j < length - i - 1; j++) {
+          if (postsCopy[j + 1].upvotes > postsCopy[j].upvotes) {
+            const temp: DocumentData = postsCopy[j + 1];
+            postsCopy[j + 1] = postsCopy[j];
+            postsCopy[j] = temp;
+          }
         }
       }
+      setPosts(postsCopy);
+      setAlreadySortedPopular(true)
+      setAlreadySortedNew(false)
     }
-
-    setPosts(postsCopy);
   }
 
+  const [alreadySortedNew, setAlreadySortedNew] = useState(false)
+
   function sortByNew(): void {
-    const postsCopy: DocumentData[] = structuredClone(posts);
 
-    const length: number = postsCopy.length;
+    if(!alreadySortedNew){
 
-    for (let i = 0; i < length - 1; i++) {
-      for (let j = 0; j < length - i - 1; j++) {
-        // Compare adjacent elements
-        if (postsCopy[j + 1].timePosted > postsCopy[j].timePosted) {
-          const temp: DocumentData = postsCopy[j + 1];
-          postsCopy[j + 1] = postsCopy[j];
-          postsCopy[j] = temp;
+      const postsCopy: DocumentData[] = structuredClone(posts);
+
+      const length: number = postsCopy.length;
+
+      for (let i = 0; i < length - 1; i++) {
+        for (let j = 0; j < length - i - 1; j++) {
+          // Compare adjacent elements
+          if (postsCopy[j + 1].timePosted > postsCopy[j].timePosted) {
+            const temp: DocumentData = postsCopy[j + 1];
+            postsCopy[j + 1] = postsCopy[j];
+            postsCopy[j] = temp;
+          }
         }
       }
-    }
-    if (posts !== postsCopy) {
-      setPosts(postsCopy);
+        setPosts(postsCopy);
+        setAlreadySortedNew(true)
+        setAlreadySortedPopular(false)
+      
     }
   }
 
