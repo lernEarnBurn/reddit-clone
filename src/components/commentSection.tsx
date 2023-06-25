@@ -2,6 +2,8 @@ import { Button } from './ui/button';
 import { Loader2 } from 'lucide-react';
 import { Textarea } from './ui/textarea';
 
+import { Comment } from './comment';
+
 import {
   collection,
   updateDoc,
@@ -20,6 +22,7 @@ interface CommentSectionProps {
   post: DocumentData;
 }
 
+//add feature that displays comments on front end immediately after post
 export function CommentSection(props: CommentSectionProps) {
   const commentInputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -62,9 +65,7 @@ export function CommentSection(props: CommentSectionProps) {
     }
   }
 
-  //make a recursive function that goes until hits base case of comments = [] then starts going up
-  //on each list it will go and push comments onto comments state and have them indented with inline jsx
-
+  
   const [comments, setComments] = useState<DocumentData[]>([]);
   useEffect(() => {
     const tempComments: DocumentData[] = []
@@ -76,38 +77,28 @@ export function CommentSection(props: CommentSectionProps) {
         const docRef = doc(getFirestore(), 'comments', id);
         const docSnap = await getDoc(docRef);
         if(docSnap && docSnap.exists()){
-            tempComments.push(docSnap.data())
+            const data = docSnap.data()
+            data.id = id
+            tempComments.push(data)
 
-            const commentComments = docSnap.data()?.comments;
+            const commentComments = data.comments;
     
-            if(commentComments.length === 0) { 
-    
-                return
-    
-            }else{
-    
-                for (const comment of commentComments) {
-                    const nestedCommentIds = comment.comments;
-    
-                    if (nestedCommentIds.length > 0) {
-    
-                      await getCommentData(nestedCommentIds);
-    
-                    }
-    
-                }
-    
-          
-    
+            if(commentComments.length > 0) { 
+                
+                await getCommentData(commentComments);
+                    
+                 
             }
                 
         }
       }
     }
-   
-    getCommentData(props.post.comments).then(() => {console.log(comments)});
+   if(props.post.comments){
+    getCommentData(props.post.comments).then(() => {setComments(tempComments)});
+
+   }
     
-  }, [props.post]);
+  }, [props.post.comments]);
 
   return (
     <>
@@ -135,7 +126,11 @@ export function CommentSection(props: CommentSectionProps) {
         </Button>
       )}
       <hr className="primary-foreground mb-6 mt-8 border-[.08vh]" />
-      <section></section>
+      <section>
+        {comments.map((comment, index) => {
+            return ( <Comment key={index} comment={comment}/>)
+        })}
+      </section>
     </>
   );
 }

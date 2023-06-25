@@ -21,7 +21,6 @@ import { getDocumentIdFromField } from '../modules/getIdFromField';
 
 import { CommentSection } from './commentSection';
 
-import { Textarea } from './ui/textarea';
 import { PageInfoSkeleton } from './ui/PageInfoSkeleton';
 import { PostPageSkeleton } from './ui/PostPageSkeleton';
 
@@ -197,7 +196,7 @@ export function PostPage() {
             {post.title}
           </div>
           {!hasImage ? (
-            <div className="whitespace-normal text-sm">{post.content}</div>
+            <div className="whitespace-normal text-sm w-[44vw]">{post.content}</div>
           ) : (
             <div
               className="h-[60vh] w-[45vw] bg-cover bg-center bg-no-repeat object-cover"
