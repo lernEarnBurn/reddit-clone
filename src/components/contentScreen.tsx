@@ -292,7 +292,7 @@ export const ContentScreen = memo((props: contentScreenProps) => {
         )}
       </div>
       {!loading ? (
-        <PageInfo subgeddit={subgeddit} subgedditObj={subgedditData} />
+        <PageInfo subgeddit={subgeddit} subgedditObj={subgedditData} user={props.user}/>
       ) : (
         <PageInfoSkeleton subgeddit={subgeddit} />
       )}

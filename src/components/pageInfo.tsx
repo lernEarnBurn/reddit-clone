@@ -2,8 +2,6 @@ import { Button } from './ui/button';
 import { useState, useEffect } from 'react';
 import { getUsersSubgeddits } from '../modules/getUsersSubgeddits';
 
-import { getAuth } from 'firebase/auth';
-
 import { DocumentData } from 'firebase/firestore';
 
 import { Link } from 'react-router-dom';
@@ -11,9 +9,14 @@ import { Link } from 'react-router-dom';
 interface PageInfoProps {
   subgeddit: string;
   subgedditObj: DocumentData;
+  user: string | null;
 }
 
 export function PageInfo(props: PageInfoProps) {
+
+  const [followed, setFollowed] = useState<boolean | null>(false);
+  const [isRealSubgeddit, setIsRealSubgeddit] = useState<boolean | null>(null);
+
   useEffect(() => {
     if (props.subgeddit === 'Home' || props.subgeddit === 'Popular') {
       setIsRealSubgeddit(false);
@@ -22,22 +25,23 @@ export function PageInfo(props: PageInfoProps) {
     }
 
     const checkIfFollowingSubgeddit = async () => {
-      const user = getAuth().currentUser?.displayName;
-      if (user) {
-        const followedSubgeddits = await getUsersSubgeddits(user);
-        for (const subgeddit in followedSubgeddits) {
-          if (props.subgeddit === subgeddit) {
-            setFollowed(true);
+      if(props.user){
+        const followedSubgeddits = await getUsersSubgeddits(props.user);
+        if(followedSubgeddits){
+          for (const subgeddit of followedSubgeddits) {
+            console.log(`prop subgeddit: ${props.subgeddit === subgeddit}`)
+            if (props.subgeddit === subgeddit) {
+              setFollowed(true);
+              
+            }
           }
         }
       }
     };
 
     checkIfFollowingSubgeddit();
-  }, [props.subgeddit]);
+  }, [props.subgeddit, props.user]);
 
-  const [followed, setFollowed] = useState<boolean | null>(false);
-  const [isRealSubgeddit, setIsRealSubgeddit] = useState<boolean | null>(null);
 
   return (
     <div className="ml-2 mt-2 h-auto min-w-[20vw] max-w-[20vw] flex-col justify-end rounded-sm bg-gray-800 pb-4">
@@ -68,11 +72,15 @@ export function PageInfo(props: PageInfoProps) {
             {props.subgeddit !== 'Home' &&
             props.subgeddit !== 'Popular' &&
             followed ? (
-              <p>not followed</p>
+              <Button className="ml-[1vw] mt-2 h-[5vh] w-[18vw]">
+                Unfollow
+              </Button>
             ) : props.subgeddit !== 'Home' &&
               props.subgeddit !== 'Popular' &&
               !followed ? (
-              <p>followed</p>
+                <Button className=" ml-[1vw] mt-2 h-[5vh] w-[18vw]">
+                  Follow
+                </Button>
             ) : null}
           </>
         ) : null}

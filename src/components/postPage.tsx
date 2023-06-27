@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { PageInfo } from './pageInfo';
@@ -52,15 +52,19 @@ export function PostPage() {
 
   useEffect(() => {
     async function getSubgedditDetails(): Promise<void> {
-      setUpvotesAmount(post.upvotes);
-      const collectionRef = collection(getFirestore(), 'subgeddits');
-      const q = query(collectionRef, where('name', '==', post.subgeddit));
-      const querySnapshot = await getDocs(q);
-      if (!querySnapshot.empty) {
-        const documentSnapshot = querySnapshot.docs[0];
-        const data = documentSnapshot.data();
-        setSubgedditData(data);
-        setLoading(false);
+      if(post.subgeddit){
+
+        
+        setUpvotesAmount(post.upvotes);
+        const collectionRef = collection(getFirestore(), 'subgeddits');
+        const q = query(collectionRef, where('name', '==', post.subgeddit));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          const documentSnapshot = querySnapshot.docs[0];
+          const data = documentSnapshot.data();
+          setSubgedditData(data);
+          setLoading(false);
+        }
       }
     }
 
@@ -206,7 +210,7 @@ export function PostPage() {
           <CommentSection id={id} post={post} />
         </div>
       </div>
-      <PageInfo subgeddit={post.subgeddit} subgedditObj={subgedditData} />
+      <PageInfo subgeddit={post.subgeddit} subgedditObj={subgedditData} user={localStorage.getItem('user')}/>
     </div>
   ) : (
     <div className="flex items-start justify-center">
