@@ -2,7 +2,9 @@ import { Button } from './ui/button';
 import { useState, useEffect } from 'react';
 import { getUsersSubgeddits } from '../modules/getUsersSubgeddits';
 
-import { DocumentData } from 'firebase/firestore';
+import { DocumentData, getFirestore, doc, updateDoc, arrayUnion, arrayRemove, onSnapshot } from 'firebase/firestore';
+
+import { getDocumentIdFromField } from '../modules/getIdFromField';
 
 import { Link } from 'react-router-dom';
 
@@ -29,7 +31,6 @@ export function PageInfo(props: PageInfoProps) {
         const followedSubgeddits = await getUsersSubgeddits(props.user);
         if(followedSubgeddits){
           for (const subgeddit of followedSubgeddits) {
-            console.log(`prop subgeddit: ${props.subgeddit === subgeddit}`)
             if (props.subgeddit === subgeddit) {
               setFollowed(true);
               
@@ -41,6 +42,58 @@ export function PageInfo(props: PageInfoProps) {
 
     checkIfFollowingSubgeddit();
   }, [props.subgeddit, props.user]);
+
+  const [alreadyRunning, setAlreadyRunning] = useState(false)
+  
+
+  async function followSub(){
+    if(!alreadyRunning){
+      setAlreadyRunning(true)
+
+      setFollowed((prevFollowed) => !prevFollowed)
+
+      if(props.user){
+        const userId = await getDocumentIdFromField(
+          'users',
+          'name',
+          localStorage.getItem('user')
+        );
+
+        const userRef = doc(getFirestore(), 'users', userId);
+
+        await updateDoc(userRef, {
+          following: arrayUnion(props.subgeddit),
+        });
+
+        setAlreadyRunning(false)
+
+      }
+    }
+  }
+
+  async function unfollowSub(){
+    if(!alreadyRunning){
+      setAlreadyRunning(true)
+      setFollowed((prevFollowed) => !prevFollowed)
+
+      if(props.user){
+        const userId = await getDocumentIdFromField(
+          'users',
+          'name',
+          localStorage.getItem('user')
+        );
+
+        const userRef = doc(getFirestore(), 'users', userId);
+
+        await updateDoc(userRef, {
+          following: arrayRemove(props.subgeddit),
+        });
+
+        setAlreadyRunning(false)
+
+      }
+    }
+  }
 
 
   return (
@@ -72,13 +125,13 @@ export function PageInfo(props: PageInfoProps) {
             {props.subgeddit !== 'Home' &&
             props.subgeddit !== 'Popular' &&
             followed ? (
-              <Button className="ml-[1vw] mt-2 h-[5vh] w-[18vw]">
+              <Button onClick={unfollowSub} className="ml-[1vw] mt-2 h-[5vh] w-[18vw]">
                 Unfollow
               </Button>
             ) : props.subgeddit !== 'Home' &&
               props.subgeddit !== 'Popular' &&
               !followed ? (
-                <Button className=" ml-[1vw] mt-2 h-[5vh] w-[18vw]">
+                <Button onClick={followSub} className=" ml-[1vw] mt-2 h-[5vh] w-[18vw]">
                   Follow
                 </Button>
             ) : null}
