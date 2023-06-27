@@ -97,10 +97,23 @@ export function PageInfo(props: PageInfoProps) {
 
 
   return (
-    <div className="ml-2 mt-2 h-auto min-w-[20vw] max-w-[20vw] flex-col justify-end rounded-sm bg-gray-800 pb-4">
+    <div className="ml-2 mt-2 h-auto min-w-[20vw] max-w-[20vw] flex-col justify-center rounded-sm bg-gray-800 pb-4 ">
       <div className="primary-foreground mt-6 flex justify-center text-2xl font-bold">
         <p>g/{props.subgeddit}</p>
       </div>
+      {props.subgeddit !== 'Home' &&
+            props.subgeddit !== 'Popular' &&
+            followed ? (
+              <Button onClick={unfollowSub} className="ml-[6.4vw] rounded-2xl mt-3 py-3 h-[3vh] w-[7vw] text-xs">
+                Unfollow
+              </Button>
+            ) : props.subgeddit !== 'Home' &&
+              props.subgeddit !== 'Popular' &&
+              !followed ? (
+                <Button onClick={followSub} className="ml-[6.4vw] rounded-2xl mt-3 py-3 h-[3vh] w-[7vw] text-xs">
+                  Follow
+                </Button>
+            ) : null}
 
       <div className="primary-foreground px-6 py-4">
         {props.subgedditObj.description}
@@ -118,23 +131,11 @@ export function PageInfo(props: PageInfoProps) {
               </div>
             </div>
             <Link to="/create-post">
-              <Button className="ml-[1vw] mt-2 h-[5vh] w-[18vw]">
+              <Button className="ml-[1vw] mt-4 h-[5vh] w-[18vw]">
                 Create Post
               </Button>
             </Link>
-            {props.subgeddit !== 'Home' &&
-            props.subgeddit !== 'Popular' &&
-            followed ? (
-              <Button onClick={unfollowSub} className="ml-[1vw] mt-2 h-[5vh] w-[18vw]">
-                Unfollow
-              </Button>
-            ) : props.subgeddit !== 'Home' &&
-              props.subgeddit !== 'Popular' &&
-              !followed ? (
-                <Button onClick={followSub} className=" ml-[1vw] mt-2 h-[5vh] w-[18vw]">
-                  Follow
-                </Button>
-            ) : null}
+            
           </>
         ) : null}
       </div>
