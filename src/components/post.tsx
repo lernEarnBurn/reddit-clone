@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 
 import { getFirestore, increment, doc, updateDoc } from 'firebase/firestore';
 
@@ -16,7 +16,20 @@ interface PostProps {
   id: string;
 }
 
-export function Post(props: PostProps) {
+const propsAreEqual = (prevProps: PostProps, nextProps: PostProps) => {
+  // Compare the relevant props for equality
+  return (
+    prevProps.content === nextProps.content &&
+    prevProps.title === nextProps.title &&
+    prevProps.user === nextProps.user &&
+    prevProps.subgeddit === nextProps.subgeddit &&
+    prevProps.timePosted === nextProps.timePosted &&
+    prevProps.upvotes === nextProps.upvotes &&
+    prevProps.id === nextProps.id
+  );
+};
+
+export const Post = memo((props: PostProps) => {
   const [hasImage, setImageStatus] = useState(false);
 
   useEffect(() => {
@@ -24,10 +37,9 @@ export function Post(props: PostProps) {
       setImageStatus(true);
     }
   }, [props.content]);
+  
+  
 
-  //might need to refresh to display change
-  //so instead maybe make it a temporary superficial
-  //frontend increment and then it'll be caught up for real next time
   const [upvotesAmount, setUpvotesAmount] = useState(props.upvotes);
   const [alreadyIncremented, setAlreadyIncremented] = useState(false);
   const [alreadyDecremented, setAlreadyDecremented] = useState(false);
@@ -109,9 +121,9 @@ export function Post(props: PostProps) {
     <>
       <Link
         to={`/subgeddits/${props.subgeddit}/posts/${props.id}`}
-        className="hover:border-1 mt-2 flex w-[40vw] rounded-sm bg-gray-800 px-3  py-2 text-gray-100 hover:border hover:border-gray-50"
+        className=" hover:border-1 mt-2 flex w-[40vw] h-auto rounded-sm bg-gray-800 px-3  py-2 text-gray-100 hover:border hover:border-gray-50"
       >
-        <div className="mr-4 mt-1">
+        <div className="h-auto w-auto mr-4 mt-1">
           <button
             className={
               alreadyIncremented
@@ -120,7 +132,7 @@ export function Post(props: PostProps) {
             }
             onClick={incrementUpvotes}
           ></button>
-          <div className="-mt-[.65vh]  text-center text-sm">
+          <div className="mb-[.3vh] ml-[.2vh] w-auto h-auto text-center text-sm">
             {upvotesAmount}
           </div>
           <button
@@ -133,7 +145,7 @@ export function Post(props: PostProps) {
           ></button>
         </div>
 
-        <div className="flex-col justify-center gap-6">
+        <div className="flex-col justify-center gap-6 h-auto w-auto">
           <div className="flex items-center gap-2">
             <div className="primary-foreground cursor-pointer text-sm hover:underline">
               g/{props.subgeddit}
@@ -148,7 +160,7 @@ export function Post(props: PostProps) {
           </div>
           <div className="primary-foreground mb-2 text-xl">{props.title}</div>
           {!hasImage ? (
-            <div className="whitespace-normal text-sm">{props.content}</div>
+            <div className="whitespace-normal text-sm w-[36vw] h-auto">{props.content}</div>
           ) : (
             /*figure out how to properly size images and possibly figure out aspect ratios */
             <div
@@ -160,4 +172,4 @@ export function Post(props: PostProps) {
       </Link>
     </>
   );
-}
+}, propsAreEqual)

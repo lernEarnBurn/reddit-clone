@@ -1,6 +1,6 @@
 import { PageInfo } from './pageInfo';
 import { Post } from './post';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import {
   collection,
   getFirestore,
@@ -14,7 +14,6 @@ import {
 
 import { DocumentData } from 'firebase/firestore';
 
-import { v4 as uuidv4 } from 'uuid';
 
 import { useLocation, useParams } from 'react-router-dom';
 
@@ -31,8 +30,15 @@ interface contentScreenProps {
   user: string | null;
 }
 
+const propsAreEqual = (prevProps: contentScreenProps, nextProps: contentScreenProps) => {
+  // Compare the relevant props for equality
+  return (
+    prevProps.user === nextProps.user
+  );
+};
+
 //add caching to reduce speeds when refreshing pages
-export function ContentScreen(props: contentScreenProps) {
+export const ContentScreen = memo((props: contentScreenProps) => {
   const route = useLocation();
   const { subgeddit: routeSubgeddit } = useParams();
   const [subgeddit, setSubgeddit] = useState('');
@@ -191,7 +197,6 @@ export function ContentScreen(props: contentScreenProps) {
 
     fetchPosts();
   }, [subgedditData, firstEffectCompleted]);
-
   
   const [alreadySortedPopular, setAlreadySortedPopular] = useState(false)
 
@@ -215,6 +220,7 @@ export function ContentScreen(props: contentScreenProps) {
       setAlreadySortedNew(false)
     }
   }
+
 
   const [alreadySortedNew, setAlreadySortedNew] = useState(false)
 
@@ -245,7 +251,7 @@ export function ContentScreen(props: contentScreenProps) {
 
   return (
     <div className="flex items-start justify-center">
-      <div className="flex-col">
+      <div className="flex-col h-auto">
         <div className="mt-2 flex h-[8vh] w-[40vw] items-center justify-evenly rounded-sm bg-gray-800 ">
           <div
             onClick={sortByPopularity}
@@ -272,7 +278,7 @@ export function ContentScreen(props: contentScreenProps) {
                 subgeddit={post.subgeddit}
                 timePosted={post.timePosted}
                 upvotes={post.upvotes}
-                key={uuidv4()}
+                key={post.id}
                 id={post.id}
               />
             );
@@ -292,4 +298,4 @@ export function ContentScreen(props: contentScreenProps) {
       )}
     </div>
   );
-}
+}, propsAreEqual)
