@@ -1,6 +1,6 @@
 import './App.css';
 import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
-import { SearchBar } from './components/ui/searchBar';
+import SearchBar from './components/searchBar';
 import { useState, useEffect, useCallback } from 'react';
 import { Button } from './components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
@@ -155,10 +155,7 @@ function App() {
             </motion.div>
           )}
         </div>
-        <SearchBar
-          className="ml-60 w-[32vw] border-gray-900 font-medium text-gray-200 focus:border-gray-50"
-          placeholder="Search Geddit"
-        />
+        <SearchBar/>
         <div className="ml-10 flex gap-5">
           <TooltipProvider>
             <Tooltip>
