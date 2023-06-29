@@ -1,7 +1,7 @@
 import './App.css';
 import { BrowserRouter, Route, Routes, Link } from 'react-router-dom';
 import SearchBar from './components/searchBar';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from './components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { Loginform } from './components/loginForm';
@@ -91,13 +91,34 @@ function App() {
     setDisplayOptions((prevDisplayOptions) => !prevDisplayOptions);
   }, []);
 
+    const onLinkClick = useCallback((event: React.MouseEvent<HTMLAnchorElement>) => {
+
+    const target = event.target as HTMLAnchorElement;
+
+    setDisplayOptions(false);
+
+    localStorage.setItem('last-subgeddit', target.textContent || '');
+
+  }, [])
+
+
+
+  const imageUploaderRef = useRef<HTMLInputElement>(null);
+  const [currentImage, setCurrentImage] = useState('');
+
+  function saveProfilePic(): void {
+    if (imageUploaderRef.current?.files) {
+      const file = imageUploaderRef.current.files[0];
+      const reader = new FileReader();
+      console.log('done');
+      reader.onload = (e) => {
+        setCurrentImage(`${e.target?.result}`);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
  
 
-  const onLinkClick = useCallback((event: React.MouseEvent<HTMLAnchorElement>) => {
-    const target = event.target as HTMLAnchorElement;
-    setDisplayOptions(false);
-    localStorage.setItem('last-subgeddit', target.textContent || '');
-  }, [])
 
   return (
     <BrowserRouter>
@@ -231,9 +252,17 @@ function App() {
           </>
         ) : (
           <div className="primary-foreground absolute right-4 flex max-w-[19vw] items-start justify-center overflow-hidden rounded-md bg-gray-900">
-            <Avatar className="h-[6vh] w-[4.5vw] min-w-[4.5vw] bg-contain ">
-              <AvatarImage src="/images/stockAvatar.png" />
+            <Avatar onClick={() => {imageUploaderRef.current?.click()}} className="h-[6vh] w-[4.5vw] min-w-[4.5vw]  hover:border-blue-300 hover:border rounded-l-md">
+              <AvatarImage  src={'/images/stockAvatar.png'}/>
+              <AvatarFallback>CN</AvatarFallback>
             </Avatar>
+             <input
+              onChange={saveProfilePic}
+              ref={imageUploaderRef}
+              className="hidden"
+              type="file"
+              accept="image/*"
+            />
             <div className="flex-col">
               <p className="mt-.5 mr-4">{user}</p>
               <p
