@@ -32,6 +32,10 @@ const SearchBar: React.FC = () => {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
+
+  function clearInput(){
+    setSearchQuery('')
+  }
   return (
     <div className='flex-col items-center justify-center ml-60'>
       <input className=' w-[32vw] border-gray-900 font-medium text-gray-200 focus:border-gray-50 flex h-10  rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
@@ -39,7 +43,7 @@ const SearchBar: React.FC = () => {
       <ul className='absolute top-14 rounded-sm'>
         {searchResults.map((result) => (
           <li key={result.name} className={` rounded-sm w-[32vw] h-8 bg-gray-800 hover:bg-gray-900 overflow-visible flex items-center justify-center`}> 
-            <Link  to={`/subgeddits/${result.name}`}
+            <Link onClick={clearInput}  to={`/subgeddits/${result.name}`}
                   className="text-center text-gray-300" >{result.name}
             </Link>
           </li>
