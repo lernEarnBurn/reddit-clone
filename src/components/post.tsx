@@ -37,8 +37,6 @@ export const Post = memo((props: PostProps) => {
       setImageStatus(true);
     }
   }, [props.content]);
-  
-  
 
   const [upvotesAmount, setUpvotesAmount] = useState(props.upvotes);
   const [alreadyIncremented, setAlreadyIncremented] = useState(false);
@@ -121,9 +119,9 @@ export const Post = memo((props: PostProps) => {
     <>
       <Link
         to={`/subgeddits/${props.subgeddit}/posts/${props.id}`}
-        className=" hover:border-1 mt-2 flex w-[40vw] h-auto rounded-sm bg-gray-800 px-3  py-2 text-gray-100 hover:border hover:border-gray-50"
+        className=" hover:border-1 mt-2 flex h-auto w-[40vw] rounded-sm bg-gray-800 px-3  py-2 text-gray-100 hover:border hover:border-gray-50"
       >
-        <div className="h-auto w-auto mr-4 mt-1">
+        <div className="mr-4 mt-1 h-auto w-auto">
           <button
             className={
               alreadyIncremented
@@ -132,7 +130,7 @@ export const Post = memo((props: PostProps) => {
             }
             onClick={incrementUpvotes}
           ></button>
-          <div className="mb-[.3vh] ml-[.2vh] w-auto h-auto text-center text-sm">
+          <div className="mb-[.3vh] ml-[.2vh] h-auto w-auto text-center text-sm">
             {upvotesAmount}
           </div>
           <button
@@ -145,7 +143,7 @@ export const Post = memo((props: PostProps) => {
           ></button>
         </div>
 
-        <div className="flex-col justify-center gap-6 h-auto w-auto">
+        <div className="h-auto w-auto flex-col justify-center gap-6">
           <div className="flex items-center gap-2">
             <div className="primary-foreground cursor-pointer text-sm hover:underline">
               g/{props.subgeddit}
@@ -160,7 +158,9 @@ export const Post = memo((props: PostProps) => {
           </div>
           <div className="primary-foreground mb-2 text-xl">{props.title}</div>
           {!hasImage ? (
-            <div className="whitespace-normal text-sm w-[36vw] h-auto">{props.content}</div>
+            <div className="h-auto w-[36vw] whitespace-normal text-sm">
+              {props.content}
+            </div>
           ) : (
             /*figure out how to properly size images and possibly figure out aspect ratios */
             <div
@@ -172,4 +172,4 @@ export const Post = memo((props: PostProps) => {
       </Link>
     </>
   );
-}, propsAreEqual)
+}, propsAreEqual);

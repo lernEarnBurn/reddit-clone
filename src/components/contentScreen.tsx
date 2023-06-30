@@ -14,7 +14,6 @@ import {
 
 import { DocumentData } from 'firebase/firestore';
 
-
 import { useLocation, useParams } from 'react-router-dom';
 
 import { ArrowUpSquare } from 'lucide-react';
@@ -30,11 +29,12 @@ interface contentScreenProps {
   user: string | null;
 }
 
-const propsAreEqual = (prevProps: contentScreenProps, nextProps: contentScreenProps) => {
+const propsAreEqual = (
+  prevProps: contentScreenProps,
+  nextProps: contentScreenProps
+) => {
   // Compare the relevant props for equality
-  return (
-    prevProps.user === nextProps.user
-  );
+  return prevProps.user === nextProps.user;
 };
 
 //add caching to reduce speeds when refreshing pages
@@ -197,11 +197,11 @@ export const ContentScreen = memo((props: contentScreenProps) => {
 
     fetchPosts();
   }, [subgedditData, firstEffectCompleted]);
-  
-  const [alreadySortedPopular, setAlreadySortedPopular] = useState(false)
+
+  const [alreadySortedPopular, setAlreadySortedPopular] = useState(false);
 
   function sortByPopularity(): void {
-    if(!alreadySortedPopular){
+    if (!alreadySortedPopular) {
       const postsCopy: DocumentData[] = JSON.parse(JSON.stringify(posts));
 
       const length: number = postsCopy.length;
@@ -216,18 +216,15 @@ export const ContentScreen = memo((props: contentScreenProps) => {
         }
       }
       setPosts(postsCopy);
-      setAlreadySortedPopular(true)
-      setAlreadySortedNew(false)
+      setAlreadySortedPopular(true);
+      setAlreadySortedNew(false);
     }
   }
 
-
-  const [alreadySortedNew, setAlreadySortedNew] = useState(false)
+  const [alreadySortedNew, setAlreadySortedNew] = useState(false);
 
   function sortByNew(): void {
-
-    if(!alreadySortedNew){
-
+    if (!alreadySortedNew) {
       const postsCopy: DocumentData[] = structuredClone(posts);
 
       const length: number = postsCopy.length;
@@ -242,16 +239,15 @@ export const ContentScreen = memo((props: contentScreenProps) => {
           }
         }
       }
-        setPosts(postsCopy);
-        setAlreadySortedNew(true)
-        setAlreadySortedPopular(false)
-      
+      setPosts(postsCopy);
+      setAlreadySortedNew(true);
+      setAlreadySortedPopular(false);
     }
   }
 
   return (
     <div className="flex items-start justify-center">
-      <div className="flex-col h-auto">
+      <div className="h-auto flex-col">
         <div className="mt-2 flex h-[8vh] w-[40vw] items-center justify-evenly rounded-sm bg-gray-800 ">
           <div
             onClick={sortByPopularity}
@@ -292,10 +288,14 @@ export const ContentScreen = memo((props: contentScreenProps) => {
         )}
       </div>
       {!loading ? (
-        <PageInfo subgeddit={subgeddit} subgedditObj={subgedditData} user={props.user}/>
+        <PageInfo
+          subgeddit={subgeddit}
+          subgedditObj={subgedditData}
+          user={props.user}
+        />
       ) : (
         <PageInfoSkeleton subgeddit={subgeddit} />
       )}
     </div>
   );
-}, propsAreEqual)
+}, propsAreEqual);

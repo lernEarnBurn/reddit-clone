@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, where, getDocs, getFirestore, DocumentData } from 'firebase/firestore';
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  getFirestore,
+  DocumentData,
+} from 'firebase/firestore';
 
 import { Link } from 'react-router-dom';
 
@@ -33,18 +40,30 @@ const SearchBar: React.FC = () => {
     setSearchQuery(event.target.value);
   };
 
-  function clearInput(){
-    setSearchQuery('')
+  function clearInput() {
+    setSearchQuery('');
   }
   return (
-    <div className='flex-col items-center justify-center ml-60'>
-      <input className=' w-[32vw] border-gray-900 font-medium text-gray-200 focus:border-gray-50 flex h-10  rounded-md border border-input bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50'
-             placeholder="Search Geddit" type="text" value={searchQuery} onChange={handleInputChange} />
-      <ul className='absolute top-14 rounded-sm'>
+    <div className="ml-60 flex-col items-center justify-center">
+      <input
+        className=" flex h-10 w-[32vw] rounded-md border border-gray-900 border-input  bg-transparent px-3 py-2 text-sm font-medium text-gray-200 ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus:border-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        placeholder="Search Geddit"
+        type="text"
+        value={searchQuery}
+        onChange={handleInputChange}
+      />
+      <ul className="absolute top-14 rounded-sm">
         {searchResults.map((result) => (
-          <li key={result.name} className={` rounded-sm w-[32vw] h-8 bg-gray-800 hover:bg-gray-900 overflow-visible flex items-center justify-center`}> 
-            <Link onClick={clearInput}  to={`/subgeddits/${result.name}`}
-                  className="text-center text-gray-300" >{result.name}
+          <li
+            key={result.name}
+            className={` flex h-8 w-[32vw] items-center justify-center overflow-visible rounded-sm bg-gray-800 hover:bg-gray-900`}
+          >
+            <Link
+              onClick={clearInput}
+              to={`/subgeddits/${result.name}`}
+              className="text-center text-gray-300"
+            >
+              {result.name}
             </Link>
           </li>
         ))}

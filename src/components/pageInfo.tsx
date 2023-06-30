@@ -2,7 +2,15 @@ import { Button } from './ui/button';
 import { useState, useEffect } from 'react';
 import { getUsersSubgeddits } from '../modules/getUsersSubgeddits';
 
-import { DocumentData, getFirestore, doc, updateDoc, arrayUnion, arrayRemove, onSnapshot } from 'firebase/firestore';
+import {
+  DocumentData,
+  getFirestore,
+  doc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  onSnapshot,
+} from 'firebase/firestore';
 
 import { getDocumentIdFromField } from '../modules/getIdFromField';
 
@@ -15,7 +23,6 @@ interface PageInfoProps {
 }
 
 export function PageInfo(props: PageInfoProps) {
-
   const [followed, setFollowed] = useState<boolean | null>(false);
   const [isRealSubgeddit, setIsRealSubgeddit] = useState<boolean | null>(null);
 
@@ -27,13 +34,12 @@ export function PageInfo(props: PageInfoProps) {
     }
 
     const checkIfFollowingSubgeddit = async () => {
-      if(props.user){
+      if (props.user) {
         const followedSubgeddits = await getUsersSubgeddits(props.user);
-        if(followedSubgeddits){
+        if (followedSubgeddits) {
           for (const subgeddit of followedSubgeddits) {
             if (props.subgeddit === subgeddit) {
               setFollowed(true);
-              
             }
           }
         }
@@ -43,16 +49,15 @@ export function PageInfo(props: PageInfoProps) {
     checkIfFollowingSubgeddit();
   }, [props.subgeddit, props.user]);
 
-  const [alreadyRunning, setAlreadyRunning] = useState(false)
-  
+  const [alreadyRunning, setAlreadyRunning] = useState(false);
 
-  async function followSub(){
-    if(!alreadyRunning){
-      setAlreadyRunning(true)
+  async function followSub() {
+    if (!alreadyRunning) {
+      setAlreadyRunning(true);
 
-      setFollowed((prevFollowed) => !prevFollowed)
+      setFollowed((prevFollowed) => !prevFollowed);
 
-      if(props.user){
+      if (props.user) {
         const userId = await getDocumentIdFromField(
           'users',
           'name',
@@ -65,18 +70,17 @@ export function PageInfo(props: PageInfoProps) {
           following: arrayUnion(props.subgeddit),
         });
 
-        setAlreadyRunning(false)
-
+        setAlreadyRunning(false);
       }
     }
   }
 
-  async function unfollowSub(){
-    if(!alreadyRunning){
-      setAlreadyRunning(true)
-      setFollowed((prevFollowed) => !prevFollowed)
+  async function unfollowSub() {
+    if (!alreadyRunning) {
+      setAlreadyRunning(true);
+      setFollowed((prevFollowed) => !prevFollowed);
 
-      if(props.user){
+      if (props.user) {
         const userId = await getDocumentIdFromField(
           'users',
           'name',
@@ -89,12 +93,10 @@ export function PageInfo(props: PageInfoProps) {
           following: arrayRemove(props.subgeddit),
         });
 
-        setAlreadyRunning(false)
-
+        setAlreadyRunning(false);
       }
     }
   }
-
 
   return (
     <div className="ml-2 mt-2 h-auto min-w-[20vw] max-w-[20vw] flex-col justify-center rounded-sm bg-gray-800 pb-4 ">
@@ -102,18 +104,24 @@ export function PageInfo(props: PageInfoProps) {
         <p>g/{props.subgeddit}</p>
       </div>
       {props.subgeddit !== 'Home' &&
-            props.subgeddit !== 'Popular' &&
-            followed ? (
-              <Button onClick={unfollowSub} className="ml-[6.4vw] rounded-2xl mt-3 py-3 h-[3vh] w-[7vw] text-xs">
-                Unfollow
-              </Button>
-            ) : props.subgeddit !== 'Home' &&
-              props.subgeddit !== 'Popular' &&
-              !followed ? (
-                <Button onClick={followSub} className="ml-[6.4vw] rounded-2xl mt-3 py-3 h-[3vh] w-[7vw] text-xs">
-                  Follow
-                </Button>
-            ) : null}
+      props.subgeddit !== 'Popular' &&
+      followed ? (
+        <Button
+          onClick={unfollowSub}
+          className="ml-[6.4vw] mt-3 h-[3vh] w-[7vw] rounded-2xl py-3 text-xs"
+        >
+          Unfollow
+        </Button>
+      ) : props.subgeddit !== 'Home' &&
+        props.subgeddit !== 'Popular' &&
+        !followed ? (
+        <Button
+          onClick={followSub}
+          className="ml-[6.4vw] mt-3 h-[3vh] w-[7vw] rounded-2xl py-3 text-xs"
+        >
+          Follow
+        </Button>
+      ) : null}
 
       <div className="primary-foreground px-6 py-4">
         {props.subgedditObj.description}
@@ -135,7 +143,6 @@ export function PageInfo(props: PageInfoProps) {
                 Create Post
               </Button>
             </Link>
-            
           </>
         ) : null}
       </div>

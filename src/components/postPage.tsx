@@ -52,9 +52,7 @@ export function PostPage() {
 
   useEffect(() => {
     async function getSubgedditDetails(): Promise<void> {
-      if(post.subgeddit){
-
-        
+      if (post.subgeddit) {
         setUpvotesAmount(post.upvotes);
         const collectionRef = collection(getFirestore(), 'subgeddits');
         const q = query(collectionRef, where('name', '==', post.subgeddit));
@@ -200,7 +198,9 @@ export function PostPage() {
             {post.title}
           </div>
           {!hasImage ? (
-            <div className="whitespace-normal text-sm w-[44vw]">{post.content}</div>
+            <div className="w-[44vw] whitespace-normal text-sm">
+              {post.content}
+            </div>
           ) : (
             <div
               className="h-[60vh] w-[45vw] bg-cover bg-center bg-no-repeat object-cover"
@@ -210,7 +210,11 @@ export function PostPage() {
           <CommentSection id={id} post={post} />
         </div>
       </div>
-      <PageInfo subgeddit={post.subgeddit} subgedditObj={subgedditData} user={localStorage.getItem('user')}/>
+      <PageInfo
+        subgeddit={post.subgeddit}
+        subgedditObj={subgedditData}
+        user={localStorage.getItem('user')}
+      />
     </div>
   ) : (
     <div className="flex items-start justify-center">

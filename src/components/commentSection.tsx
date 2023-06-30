@@ -65,39 +65,32 @@ export function CommentSection(props: CommentSectionProps) {
     }
   }
 
-  
   const [comments, setComments] = useState<DocumentData[]>([]);
   useEffect(() => {
-    const tempComments: DocumentData[] = []
-    console.log('ran')
-    
+    const tempComments: DocumentData[] = [];
+
     async function getCommentData(commentIds: string[]): Promise<void> {
-        
       for (const id of commentIds) {
         const docRef = doc(getFirestore(), 'comments', id);
         const docSnap = await getDoc(docRef);
-        if(docSnap && docSnap.exists()){
-            const data = docSnap.data()
-            data.id = id
-            tempComments.push(data)
+        if (docSnap && docSnap.exists()) {
+          const data = docSnap.data();
+          data.id = id;
+          tempComments.push(data);
 
-            const commentComments = data.comments;
-    
-            if(commentComments.length > 0) { 
-                
-                await getCommentData(commentComments);
-                    
-                 
-            }
-                
+          const commentComments = data.comments;
+
+          if (commentComments.length > 0) {
+            await getCommentData(commentComments);
+          }
         }
       }
     }
-   if(props.post.comments){
-    getCommentData(props.post.comments).then(() => {setComments(tempComments)});
-
-   }
-    
+    if (props.post.comments) {
+      getCommentData(props.post.comments).then(() => {
+        setComments(tempComments);
+      });
+    }
   }, [props.post.comments]);
 
   return (
@@ -128,9 +121,10 @@ export function CommentSection(props: CommentSectionProps) {
       <hr className="primary-foreground mb-6 mt-8 border-[.08vh]" />
       <section>
         {comments.map((comment, index) => {
-            return ( <Comment key={index} comment={comment}/>)
+          return <Comment key={index} comment={comment} />;
         })}
       </section>
     </>
   );
 }
+3;

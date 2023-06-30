@@ -6,6 +6,8 @@ import { Button } from './ui/button';
 
 import { Loader2 } from 'lucide-react';
 
+import { imageToWebp } from '../modules/imageToWebp';
+
 import {
   addDoc,
   updateDoc,
@@ -19,7 +21,7 @@ import {
   getStorage,
   ref,
   getDownloadURL,
-  uploadBytesResumable,
+  uploadString,
 } from 'firebase/storage';
 
 import { getDocumentIdFromField } from '../modules/getIdFromField';
@@ -118,6 +120,7 @@ export function CreatePost(props: CreatePostProps) {
 
   const [loading, setLoading] = useState(false);
 
+  //possibly implement something to compress images to webp to help with load times
   async function createPost(text: boolean) {
     if (await inCollection('subgeddits', subgedditInputRef.current?.value)) {
       try {
@@ -138,13 +141,21 @@ export function CreatePost(props: CreatePostProps) {
             storageUri: null,
           });
         } else if (!text && imageUploaderRef.current?.files) {
-          const filePath = `${localStorage.getItem('user')}/${postRef.id}/${
-            imageUploaderRef.current?.files[0].name
-          }`;
+          const uploadedFile = imageUploaderRef.current?.files[0];
+
+          const webpDataURL = await imageToWebp(
+            URL.createObjectURL(uploadedFile)
+          );
+          const fileName = `image_${Date.now()}.webp`;
+
+          const filePath = `${localStorage.getItem('user')}/${
+            postRef.id
+          }/${fileName}`;
           const newImageRef = ref(getStorage(), filePath);
-          const fileSnapshot = await uploadBytesResumable(
+          const fileSnapshot = await uploadString(
             newImageRef,
-            imageUploaderRef.current?.files[0]
+            webpDataURL,
+            'data_url'
           );
 
           const publicImageUrl = await getDownloadURL(newImageRef);

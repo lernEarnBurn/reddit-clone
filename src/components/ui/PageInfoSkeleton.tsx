@@ -10,7 +10,7 @@ export function PageInfoSkeleton(props: PageInfoSkelProps) {
       <div className="mt-6 flex justify-center">
         <Skeleton className="h-[3.5vh] w-[12vw] bg-gray-100 bg-opacity-20" />
       </div>
-      <Skeleton className='ml-[6.4vw] rounded-2xl mt-3 py-3 h-[3vh] w-[7vw] bg-opacity-20 bg-gray-100'/>
+      <Skeleton className="ml-[6.4vw] mt-3 h-[3vh] w-[7vw] rounded-2xl bg-gray-100 bg-opacity-20 py-3" />
 
       <div className="px-6 py-4">
         <Skeleton className="h-[2vh] w-[15.5vw] bg-gray-100 bg-opacity-20" />

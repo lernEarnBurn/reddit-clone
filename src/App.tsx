@@ -20,7 +20,7 @@ import { getAuth, signOut } from 'firebase/auth';
 
 import { getUsersSubgeddits } from './modules/getUsersSubgeddits';
 
-import { motion } from "framer-motion"
+import { motion } from 'framer-motion';
 
 function useLogin() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -58,8 +58,6 @@ function useLogin() {
 }
 
 function App() {
-  
-
   const {
     loggedIn,
     setLoggedIn,
@@ -91,17 +89,16 @@ function App() {
     setDisplayOptions((prevDisplayOptions) => !prevDisplayOptions);
   }, []);
 
-    const onLinkClick = useCallback((event: React.MouseEvent<HTMLAnchorElement>) => {
+  const onLinkClick = useCallback(
+    (event: React.MouseEvent<HTMLAnchorElement>) => {
+      const target = event.target as HTMLAnchorElement;
 
-    const target = event.target as HTMLAnchorElement;
+      setDisplayOptions(false);
 
-    setDisplayOptions(false);
-
-    localStorage.setItem('last-subgeddit', target.textContent || '');
-
-  }, [])
-
-
+      localStorage.setItem('last-subgeddit', target.textContent || '');
+    },
+    []
+  );
 
   const imageUploaderRef = useRef<HTMLInputElement>(null);
   const [currentImage, setCurrentImage] = useState('');
@@ -117,8 +114,6 @@ function App() {
       reader.readAsDataURL(file);
     }
   }
- 
-
 
   return (
     <BrowserRouter>
@@ -126,10 +121,10 @@ function App() {
         <Link to="/">
           <div className="logo mr-6"></div>
         </Link>
-        <div className="absolute left-52 top-3 z-999">
+        <div className="z-999 absolute left-52 top-3">
           <div
             onClick={toggleDisplayOptions}
-            className="select-none primary-foreground cursor-pointer w-[14vw] rounded-sm bg-gray-800 p-1 text-center text-lg hover:border hover:border-white"
+            className="primary-foreground w-[14vw] cursor-pointer select-none rounded-sm bg-gray-800 p-1 text-center text-lg hover:border hover:border-white"
           >
             {/*use localStorage to get current page */}
             {localStorage.getItem('last-subgeddit')
@@ -137,8 +132,11 @@ function App() {
               : 'Home'}
           </div>
           {displayOptions && (
-            <motion.div animate={{ y: 15 }} transition={{ delay: 0 }} 
-                        className="primary-foreground z-10 flex flex-col rounded-sm bg-gray-800 ">
+            <motion.div
+              animate={{ y: 15 }}
+              transition={{ delay: 0 }}
+              className="primary-foreground z-10 flex flex-col rounded-sm bg-gray-800 "
+            >
               <Link
                 onClick={onLinkClick}
                 className="z-10 text-center text-lg hover:bg-gray-500 hover:text-gray-900"
@@ -176,7 +174,7 @@ function App() {
             </motion.div>
           )}
         </div>
-        <SearchBar/>
+        <SearchBar />
         <div className="ml-10 flex gap-5">
           <TooltipProvider>
             <Tooltip>
@@ -252,11 +250,16 @@ function App() {
           </>
         ) : (
           <div className="primary-foreground absolute right-4 flex max-w-[19vw] items-start justify-center overflow-hidden rounded-md bg-gray-900">
-            <Avatar onClick={() => {imageUploaderRef.current?.click()}} className="h-[6vh] w-[4.5vw] min-w-[4.5vw]  hover:border-blue-300 hover:border rounded-l-md">
-              <AvatarImage  src={'/images/stockAvatar.png'}/>
+            <Avatar
+              onClick={() => {
+                imageUploaderRef.current?.click();
+              }}
+              className="h-[6vh] w-[4.5vw] min-w-[4.5vw]  rounded-l-md hover:border hover:border-blue-300"
+            >
+              <AvatarImage src={'/images/stockAvatar.png'} />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
-             <input
+            <input
               onChange={saveProfilePic}
               ref={imageUploaderRef}
               className="hidden"
