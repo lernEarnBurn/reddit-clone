@@ -1,9 +1,17 @@
-# reddit-clone
+# reddit-clone (React and Firebase)
 
-reddit clone using react and firebase, as a final project for my frontend JS course.
-Made with ts, react, with tailwindCss.
-Made a good 70% of the functionality. 
-Isn't responsive to mobile.
-https://geddit-73046.web.app is the URL.
+## Link
+ https://geddit-73046.web.app
 
-Note: Currently you need to log in or sign up to see posts but will change
+## Technologies 
+React, TS, tailwind, and firebase as backend
+
+
+## Introduction
+Project at the end of the frontend portion of a course
+
+## Accomplishments
++ first fullstack web app
+
+
+P.S. kinda janky but was an important project that helped me grow
