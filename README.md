@@ -14,4 +14,5 @@ Project at the end of the frontend portion of a course
 + first fullstack web app
 
 
-P.S. kinda janky but was an important project that helped me grow
+P.S. kinda janky but was an important project in my journey
+P.S.S. Check the Skeletons while loading
